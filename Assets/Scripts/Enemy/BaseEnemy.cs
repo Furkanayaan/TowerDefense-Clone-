@@ -4,24 +4,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public class BaseEnemy : MonoBehaviour {
+public class BaseEnemy : MonoBehaviour, IDamageable, IHealth {
+
     
     [SerializeField] protected EnemyData enemyData;
     private Transform _targetPoint;
-    private float _currentHealth;
     private bool _isMoving = true;
     private bool _isFinishing = false;
     protected Rigidbody _rb;
-
     public Action OnDeathOrFinish;
+    
+    public float MaxHealth { get; set; }
+    public float CurrentHealth { get; set; }
 
     public void Initialize(Transform target)
     {
         _targetPoint = target;
-        _currentHealth = enemyData.maxHealth;
+        MaxHealth = enemyData.maxHealth;
+        CurrentHealth = MaxHealth;
         _isMoving = true;
         _isFinishing = false;
         _rb = GetComponent<Rigidbody>();
+        
     }
 
     protected virtual void Update() {
@@ -41,10 +45,12 @@ public class BaseEnemy : MonoBehaviour {
         }
     }
 
+    
+
     public void TakeDamage(float amount)
     {
-        _currentHealth -= amount;
-        if (_currentHealth <= 0) {
+        CurrentHealth -= amount;
+        if (CurrentHealth <= 0) {
             OnDeathOrFinish?.Invoke();
         }
     }

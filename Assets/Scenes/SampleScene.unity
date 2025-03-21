@@ -667,6 +667,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &422280474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 422280476}
+  - component: {fileID: 422280475}
+  m_Layer: 0
+  m_Name: EnemyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &422280475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422280474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a0b4f81f0c155d4e922744397daf4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &422280476
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422280474}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3.078, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &483723349
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,10 +881,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -1002,7 +1046,7 @@ GameObject:
   - component: {fileID: 753754039}
   - component: {fileID: 753754038}
   m_Layer: 5
-  m_Name: Button
+  m_Name: AddCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1153,7 +1197,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   runnerPrefab: {fileID: 1402522036290323617, guid: 1c15214ea48efec468767a8cbeae053e, type: 3}
   attackerPrefab: {fileID: 5006670215319465169, guid: 8c679e76f2f3112418de544153b1de8a, type: 3}
-  prewarmCount: 10
+  preWarmCount: 10
   activeRunnerParent: {fileID: 1106593756}
   deactiveRunnerParent: {fileID: 1110876211}
   activeAttackerParent: {fileID: 269216770}
@@ -1211,10 +1255,10 @@ RectTransform:
   - {fileID: 2001908373}
   m_Father: {fileID: 571125665}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -669, y: 401.7738}
-  m_SizeDelta: {x: 108.5419, y: 124.4524}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 291, y: -138.2262}
+  m_SizeDelta: {x: 108.54187, y: 124.45239}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &917018920
 MonoBehaviour:
@@ -1786,9 +1830,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 571125665}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 270, y: 408}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -690, y: -132}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1029019076
@@ -2148,10 +2192,10 @@ RectTransform:
   - {fileID: 106941183}
   m_Father: {fileID: 571125665}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -819.72906, y: 401.7738}
-  m_SizeDelta: {x: 108.5419, y: 124.4524}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 140.27094, y: -138.2262}
+  m_SizeDelta: {x: 108.54187, y: 124.45239}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1382054262
 MonoBehaviour:
@@ -2915,6 +2959,7 @@ SceneRoots:
   - {fileID: 824535822186060071}
   - {fileID: 1429404038}
   - {fileID: 880862482}
+  - {fileID: 422280476}
   - {fileID: 989280807}
-  - {fileID: 571125665}
   - {fileID: 160544239}
+  - {fileID: 571125665}

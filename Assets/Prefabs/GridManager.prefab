@@ -44,11 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 565946fbba7fd3148814b38cb48a811f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellSize: 8
+  cellSize: 5
   gridVisualPrefab: {fileID: 1132079080140141119, guid: 7b656b36d5b1f4340803aa0bfc4b662f, type: 3}
   placementLayer:
     serializedVersion: 2
     m_Bits: 64
   rowCount: 0
   cellCount: 
-  maksCellOnRow: 2
+  maksCellOnRow: 3

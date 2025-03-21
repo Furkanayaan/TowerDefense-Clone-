@@ -104,10 +104,15 @@ public class EnemySpawner : MonoBehaviour {
     public void RemoveEnemy(BaseEnemy enemy, GameObject enemyGameObject) {
         _activeEnemies.Remove(enemy);
         ReturnToPool(enemyGameObject);
+        //_enemyManager.UnregisterEnemy(enemy);
     }
 
     public bool AllEnemiesDead()
     {
         return _activeEnemies.Count == 0;
+    }
+
+    public List<BaseEnemy> AllEnemies() {
+        return _activeEnemies;
     }
 }
