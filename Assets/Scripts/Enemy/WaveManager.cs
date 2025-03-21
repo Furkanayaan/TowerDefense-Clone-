@@ -8,6 +8,8 @@ public class WaveManager : MonoBehaviour
 {
     [Header("Wave Properties")]
     [Inject] private EnemySpawner _enemySpawner;
+
+    [Inject] private GameManager _gameManager;
     public float delayBetweenWaves = 5f;
     public int minEnemiesPerWave = 3;
     public int maxEnemiesPerWave = 5;
@@ -23,7 +25,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator WaveLoop()
     {
-        while (true) {
+        while (!_gameManager.IsLose()) {
             IsWaveInProgress = true;
             int enemyCount = Random.Range(minEnemiesPerWave, maxEnemiesPerWave + 1);
             for (int i = 0; i < enemyCount; i++)

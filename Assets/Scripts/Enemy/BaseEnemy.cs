@@ -7,12 +7,14 @@ using Zenject;
 public class BaseEnemy : MonoBehaviour, IDamageable, IHealth {
 
     
-    [SerializeField] protected EnemyData enemyData;
-    private Transform _targetPoint;
+    [SerializeField] private EnemyData enemyData;
+    protected Transform _targetPoint;
     private bool _isMoving = true;
     private bool _isFinishing = false;
     protected Rigidbody _rb;
-    public Action OnDeathOrFinish;
+    public Action OnDeath;
+    public Action OnFinish;
+    public float rotationSpeed = 2f;
     
     public float MaxHealth { get; set; }
     public float CurrentHealth { get; set; }
@@ -36,11 +38,12 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth {
     private void MoveToTarget() {
         Vector3 dir = (_targetPoint.position - transform.position).normalized;
         Vector3 movement = dir * enemyData.moveSpeed;
-
+        
+        RotateToTarget(_targetPoint);
         _rb.velocity = movement;
 
         if (Vector3.Distance(transform.position, _targetPoint.position) < 2f) {
-            OnDeathOrFinish?.Invoke();
+            OnFinish?.Invoke();
             _isFinishing = true;
         }
     }
@@ -51,7 +54,7 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth {
     {
         CurrentHealth -= amount;
         if (CurrentHealth <= 0) {
-            OnDeathOrFinish?.Invoke();
+            OnDeath?.Invoke();
         }
     }
 
@@ -62,4 +65,17 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth {
     }
 
     public void ResumeMovement() => _isMoving = true;
+    
+    protected void RotateToTarget(Transform targetPosition) {
+        if (targetPosition == null) return;
+
+        Vector3 direction = (targetPosition.position - transform.position).normalized;
+        direction.y = 0f; 
+
+        if (direction == Vector3.zero) return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(-direction);
+        Quaternion smoothRotation = Quaternion.Slerp(_rb.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        _rb.MoveRotation(smoothRotation);
+    }
 }

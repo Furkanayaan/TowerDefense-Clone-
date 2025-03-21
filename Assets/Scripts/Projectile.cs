@@ -22,7 +22,7 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        if (_targetTransform == null)
+        if (_targetTransform == null || !_targetTransform.gameObject.activeInHierarchy)
         {
             _pool.ReturnProjectile(gameObject);
             return;

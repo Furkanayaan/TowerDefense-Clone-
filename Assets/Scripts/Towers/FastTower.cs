@@ -6,7 +6,7 @@ public class FastTower : BaseTower
 {
     protected override void Attack() {
         Transform targetTransform = FindNearestEnemyInRange();
-        if (targetTransform != null) {
+        if (targetTransform != null && targetTransform.gameObject.activeInHierarchy) {
             IDamageable targetDamageable = targetTransform.GetComponent<IDamageable>();
             if (targetDamageable != null) {
                 GameObject projectile = _projectilePoolManager.GetProjectile();

@@ -94,8 +94,8 @@ GameObject:
   - component: {fileID: 8987131780752880471}
   - component: {fileID: 4046333106943092268}
   - component: {fileID: 2578163083484301108}
-  - component: {fileID: 6206822090871227523}
   - component: {fileID: 8754574493971925546}
+  - component: {fileID: 7068633820354770023}
   m_Layer: 0
   m_Name: RunnerEnemyParent
   m_TagString: Untagged
@@ -160,7 +160,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!65 &6206822090871227523
+--- !u!114 &8754574493971925546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402522036290323617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0972d1e1f9ab2434da6e18ac409ceb32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fillImage: {fileID: 6055815748005390153}
+  bar: {fileID: 585779104950573214}
+--- !u!65 &7068633820354770023
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -181,20 +195,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8754574493971925546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1402522036290323617}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0972d1e1f9ab2434da6e18ac409ceb32, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fillImage: {fileID: 6055815748005390153}
-  bar: {fileID: 585779104950573214}
 --- !u!1001 &2262784045661511244
 PrefabInstance:
   m_ObjectHideFlags: 0

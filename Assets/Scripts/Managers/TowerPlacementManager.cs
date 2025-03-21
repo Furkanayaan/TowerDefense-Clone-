@@ -31,7 +31,7 @@ public class TowerPlacementManager : MonoBehaviour
         Camera cam = Camera.main;
         
         cam.transform.position = new Vector3(cameraXPos, cam.transform.position.y, cam.transform.position.z);
-        SetTransparency(0f);
+        SetTransparency(0.2f);
     }
     
     public void SetSelectedTower(TowerData towerData)
@@ -52,7 +52,10 @@ public class TowerPlacementManager : MonoBehaviour
 
     private void Update()
     {
-        if(_waveManager.IsWaveInProgress) return;
+        if (_waveManager.IsWaveInProgress || _gameManager.IsLose()) {
+            _ghostInstance = null;
+            return;
+        }
         
         UpdateGhostTowerPos();
         if (Input.GetMouseButtonDown(0) && _isAvailable) {
@@ -96,7 +99,7 @@ public class TowerPlacementManager : MonoBehaviour
 
                 _canPlace = _gridManager.IsCellEmpty(_gridPosition);
                 
-                SetTransparency(0.5f);
+                SetTransparency(0.7f);
                 if (!_hasAnimated && !_bDeleteTower) {
                     AnimateGhost();
                     _hasAnimated = true;
@@ -136,7 +139,7 @@ public class TowerPlacementManager : MonoBehaviour
     }
     private void HideGhost() {
         _canPlace = false;
-        SetTransparency(0f);
+        SetTransparency(0.2f);
         if (_ghostInstance != null) {
             if(_selectedTowerData != null) _ghostTowerPool.ReturnCurrentGhost(_selectedTowerData);
             _ghostInstance = null;
@@ -165,7 +168,7 @@ public class TowerPlacementManager : MonoBehaviour
     }
 
     public void DeleteTower() {
-        if(_waveManager.IsWaveInProgress || !IsAnyTowerOnCell()) return;
+        if(_waveManager.IsWaveInProgress || !IsAnyTowerOnCell() || _gameManager.IsLose()) return;
         
         _bDeleteTower = true;
         deleteCube.gameObject.SetActive(true);

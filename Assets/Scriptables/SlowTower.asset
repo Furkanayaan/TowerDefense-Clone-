@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 668f2c82a4f908444a17560dd7437314, type: 3}
   m_Name: SlowTower
   m_EditorClassIdentifier: 
-  objectType: 0
+  objectType: 1
   cost: 75
   damage: 20
   attackSpeed: 10

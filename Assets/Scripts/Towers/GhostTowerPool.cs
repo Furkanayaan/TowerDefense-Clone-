@@ -18,8 +18,7 @@ public class GhostTowerPool : MonoBehaviour {
         
         Transform from = null;
         Transform to = null;
-        switch (towerData.objectType)
-        {
+        switch (towerData.objectType) {
             case ObjectTypes.FastTower:
                 from = deActiveFastTower;
                 to = activeFastTower;

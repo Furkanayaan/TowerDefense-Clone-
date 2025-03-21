@@ -10,6 +10,9 @@ using UnityEngine.Serialization;
 public class EnemySpawner : MonoBehaviour {
     
     [Inject] private EnemyRoadPoints _enemyRoadPoints;
+    [Inject] private ProjectilePoolManager _projectilePoolManager;
+    [Inject] private GameManager _gameManager;
+    
     [Header("Enemy Prefab")]
     [SerializeField] private GameObject runnerPrefab;
     [SerializeField] private GameObject attackerPrefab;
@@ -89,22 +92,36 @@ public class EnemySpawner : MonoBehaviour {
         Vector3 offset = new Vector3(offsetIndex * 1.5f, 0, 0);
         Vector3 spawnPos = _enemyRoadPoints.GetInitTransform().position + offset;
 
-        //GameObject enemyGameObject = Instantiate(prefab, spawnPos, Quaternion.identity);
+        
         GameObject enemyGameObject = GetFromPool(prefab, activeParent);
         enemyGameObject.transform.position = spawnPos;
         
         BaseEnemy enemy = enemyGameObject.GetComponent<BaseEnemy>();
         enemy.Initialize(_enemyRoadPoints.GetTargetTransform());
+        
+        if (enemyGameObject.TryGetComponent<AttackerEnemy>(out var attackerEnemy)) {
+            enemyGameObject.GetComponent<AttackerEnemy>().SetPoolManager(_projectilePoolManager);
+        }
         _activeEnemies.Add(enemy);
-        enemy.OnDeathOrFinish += () => {
-            RemoveEnemy(enemy, enemyGameObject);
+        enemy.OnDeath += () => {
+            RemoveEnemy(enemy, enemyGameObject, true);
+        };
+        enemy.OnFinish += () => {
+            RemoveEnemy(enemy, enemyGameObject, false);
         };
     }
 
-    public void RemoveEnemy(BaseEnemy enemy, GameObject enemyGameObject) {
+    public void RemoveEnemy(BaseEnemy enemy, GameObject enemyGameObject, bool bDeath) {
         _activeEnemies.Remove(enemy);
         ReturnToPool(enemyGameObject);
-        //_enemyManager.UnregisterEnemy(enemy);
+        if (bDeath) {
+            int reward = enemy.GetEnemyData().rewardAmount;
+            _gameManager.AddCurrency(reward);
+        }
+        else {
+            int damageBase = enemy.GetEnemyData().damageOnBase;
+            _gameManager.LoseHealth(damageBase);
+        }
     }
 
     public bool AllEnemiesDead()

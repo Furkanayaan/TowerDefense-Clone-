@@ -1,24 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class AttackerEnemy : BaseEnemy {
-    private BaseTower _targetTower;
+    private Transform _targetTower;
+    private BaseTower _targetBaseTower;
+    private float _attackTimer = 0f;
+    private float _nextAttackTime = 0f;
     
-    public float rotationSpeed = 5f;
+    private ProjectilePoolManager _projectilePoolManager;
+    
+    public void SetPoolManager(ProjectilePoolManager pool) {
+        _projectilePoolManager = pool;
+    }
     protected override void Update()
     {
-        if (_targetTower != null)
-        {
-            float dist = Vector3.Distance(transform.position, _targetTower.transform.position);
-            if (dist > enemyData.attackRange || _targetTower == null) {
-                _targetTower = null;
-                ResumeMovement();
+        if (_targetTower != null) {
+            if (_targetTower.Equals(null)) {
+                ClearTarget();
             }
             else {
-                RotateToTarget();
-                StopMovement();
-                return;
+                float dist = Vector3.Distance(transform.position, _targetTower.position);
+
+                if (dist > GetEnemyData().attackRange) {
+                    ClearTarget();
+                }
+                else {
+                    RotateToTarget(_targetTower);
+                    StopMovement();
+                    HandleAttack();
+                    return;
+                }
             }
         }
         else {
@@ -28,31 +41,54 @@ public class AttackerEnemy : BaseEnemy {
         base.Update();
     }
 
-    private void SearchForTower()
+    private void ClearTarget() {
+        _targetTower = null;
+        ResumeMovement();
+    }
+
+    private void HandleAttack() {
+        _attackTimer += Time.deltaTime;
+        if (_attackTimer >= _nextAttackTime) {
+            FireProjectile();
+            _nextAttackTime = 1f / Mathf.Max(GetEnemyData().attackSpeed, 0.01f);
+            _attackTimer = 0f;
+        }
+    }
+    
+    private void FireProjectile()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, enemyData.attackRange);
-        foreach (var hit in hits)
-        {
-            if (hit.TryGetComponent(out BaseTower tower))
-            {
-                _targetTower = tower;
+        if (_targetTower == null) return;
+        IDamageable targetDamageable = _targetTower.GetComponent<IDamageable>();
+        
+        if(targetDamageable == null || _projectilePoolManager == null) return;
+        
+        GameObject projectile = _projectilePoolManager.GetProjectile();
+        projectile.transform.position = transform.position;
+
+        Projectile proj = projectile.GetComponent<Projectile>();
+        proj.Initialize(targetDamageable, _targetTower, GetEnemyData().projectileSpeed, GetEnemyData().damage, _projectilePoolManager);
+    }
+
+    private void SearchForTower() {
+        Collider[] hits = Physics.OverlapSphere(transform.position, GetEnemyData().attackRange);
+        foreach (var hit in hits) {
+            if (hit.TryGetComponent(out BaseTower tower)) {
+                _targetTower = tower.transform;
+                _targetBaseTower = tower;
+                _targetBaseTower.OnTowerDestroyed += HandleTowerDestroyed;
                 StopMovement();
                 break;
             }
         }
     }
     
-    private void RotateToTarget()
+    private void HandleTowerDestroyed(BaseTower tower)
     {
-        if (_targetTower == null) return;
-
-        Vector3 direction = (_targetTower.transform.position - transform.position).normalized;
-        direction.y = 0f; 
-
-        if (direction == Vector3.zero) return;
-
-        Quaternion targetRotation = Quaternion.LookRotation(-direction);
-        Quaternion smoothRotation = Quaternion.Slerp(_rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
-        _rb.MoveRotation(smoothRotation);
+        if (tower == _targetBaseTower)
+        {
+            _targetTower = null;
+            _targetBaseTower = null;
+            ResumeMovement();
+        }
     }
 }

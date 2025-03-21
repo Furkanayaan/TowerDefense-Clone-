@@ -12,6 +12,7 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
     private float _attackRange;
     protected float _projectileSpeed;
     private TowerData _towerData;
+    public Action<BaseTower> OnTowerDestroyed;
     
     public float MaxHealth { get; set; }
     public float CurrentHealth { get; set; }
@@ -25,6 +26,10 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
         _attackRange = data.attackRange;
         _projectileSpeed = data.projectileSpeed;
         StartCoroutine(AttackRoutine());
+    }
+
+    private void OnDestroy() {
+        OnTowerDestroyed?.Invoke(this);
     }
 
     public TowerData Data() {
