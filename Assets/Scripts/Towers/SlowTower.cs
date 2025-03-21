@@ -5,9 +5,16 @@ using UnityEngine;
 public class SlowTower : BaseTower
 {
     protected override void Attack() {
-        BaseEnemy target = FindNearestEnemyInRange();
-        if (target != null) {
-            target.TakeDamage(_damage);
+        Transform targetTransform = FindNearestEnemyInRange();
+        if (targetTransform != null) {
+            IDamageable targetDamageable = targetTransform.GetComponent<IDamageable>();
+            if (targetDamageable != null) {
+                GameObject projectile = _projectilePoolManager.GetProjectile();
+                projectile.transform.position = transform.position;
+
+                Projectile proj = projectile.GetComponent<Projectile>();
+                proj.Initialize(targetDamageable, targetTransform, _projectileSpeed, _damage, _projectilePoolManager);
+            }
         }
     }
 }

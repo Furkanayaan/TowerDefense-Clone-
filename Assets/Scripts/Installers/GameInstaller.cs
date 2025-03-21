@@ -23,6 +23,7 @@ public class GameInstaller : MonoInstaller
         Container.Bind<EnemySpawner>().FromComponentInHierarchy().AsSingle();
         Container.Bind<EnemyRoadPoints>().FromComponentInHierarchy().AsSingle();
         Container.Bind<WaveManager>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<ProjectilePoolManager>().FromComponentInHierarchy().AsSingle();
         
     }
 }

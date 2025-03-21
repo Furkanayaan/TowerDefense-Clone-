@@ -18,5 +18,6 @@ MonoBehaviour:
   attackSpeed: 10
   health: 75
   attackRange: 10
+  projectileSpeed: 5
   towerPrefab: {fileID: 9123806731000674105, guid: 2b76c327020250741a427914063257f8, type: 3}
   ghostMaterial: {fileID: 2100000, guid: 7c15377265088864c80c0889cbb6377b, type: 2}

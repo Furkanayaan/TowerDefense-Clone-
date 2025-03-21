@@ -6,9 +6,11 @@ using Zenject;
 
 public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
     [Inject] protected EnemySpawner _enemySpawner;
+    [Inject] protected ProjectilePoolManager _projectilePoolManager;
     protected float _damage;
     private float _attackSpeed;
     private float _attackRange;
+    protected float _projectileSpeed;
     private TowerData _towerData;
     
     public float MaxHealth { get; set; }
@@ -21,6 +23,7 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
         MaxHealth = data.health;
         CurrentHealth = MaxHealth;
         _attackRange = data.attackRange;
+        _projectileSpeed = data.projectileSpeed;
         StartCoroutine(AttackRoutine());
     }
 
@@ -35,10 +38,10 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
         }
     }
 
-    protected BaseEnemy FindNearestEnemyInRange() {
+    protected Transform FindNearestEnemyInRange() {
         
         List<BaseEnemy> enemies = _enemySpawner.AllEnemies();
-        BaseEnemy closest = null;
+        Transform closest = null;
         float minDistance = Mathf.Infinity;
 
         for (int i = 0; i < enemies.Count; i++)
@@ -48,12 +51,11 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
 
             if (distance <= _attackRange && distance < minDistance)
             {
-                closest = enemy;
+                closest = enemy.transform;
                 minDistance = distance;
             }
         }
-        Debug.Log("Closest: " + closest);
-
+        
         return closest;
     }
 

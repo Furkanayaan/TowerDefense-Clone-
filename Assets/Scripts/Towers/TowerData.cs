@@ -12,6 +12,7 @@ public class TowerData : ScriptableObject {
     public float attackSpeed;
     public float health;
     public float attackRange;
+    public float projectileSpeed;
     public GameObject towerPrefab;
     public Material ghostMaterial;
 }
