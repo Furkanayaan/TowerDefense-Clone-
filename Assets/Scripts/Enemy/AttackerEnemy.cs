@@ -5,14 +5,13 @@ using UnityEngine;
 public class AttackerEnemy : BaseEnemy {
     private BaseTower _targetTower;
     
-    private float _attackRange => enemyData.attackRange;
     public float rotationSpeed = 5f;
     protected override void Update()
     {
         if (_targetTower != null)
         {
             float dist = Vector3.Distance(transform.position, _targetTower.transform.position);
-            if (dist > _attackRange || _targetTower == null) {
+            if (dist > enemyData.attackRange || _targetTower == null) {
                 _targetTower = null;
                 ResumeMovement();
             }
@@ -31,7 +30,7 @@ public class AttackerEnemy : BaseEnemy {
 
     private void SearchForTower()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, _attackRange);
+        Collider[] hits = Physics.OverlapSphere(transform.position, enemyData.attackRange);
         foreach (var hit in hits)
         {
             if (hit.TryGetComponent(out BaseTower tower))

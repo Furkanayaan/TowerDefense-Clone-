@@ -4,39 +4,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class BaseTower : MonoBehaviour {
-    protected float damage;
-    protected float attackSpeed;
-    protected float health;
-    protected float attackRange;
-    protected TowerData towerData;
-    private Coroutine attackCoroutine;
+    private float _damage;
+    private float _attackSpeed;
+    private float _health;
+    private float _attackRange;
+    private TowerData _towerData;
 
     public void Initialize(TowerData data) {
-        towerData = data;
-        damage = data.damage;
-        attackSpeed = data.attackSpeed;
-        health = data.health;
-        attackRange = data.attackRange;
-        attackCoroutine = StartCoroutine(AttackRoutine());
+        _towerData = data;
+        _damage = data.damage;
+        _attackSpeed = data.attackSpeed;
+        _health = data.health;
+        _attackRange = data.attackRange;
+        StartCoroutine(AttackRoutine());
     }
 
     public TowerData Data() {
-        return towerData;
+        return _towerData;
     }
     
-    private IEnumerator AttackRoutine()
-    {
-        while (true)
-        {
+    private IEnumerator AttackRoutine() {
+        while (true) {
             Attack();
-            yield return new WaitForSeconds(attackSpeed);
+            yield return new WaitForSeconds(_attackSpeed);
         }
     }
 
     private void OnDrawGizmosSelected() {
-        if (towerData != null) {
+        if (_towerData != null) {
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position,attackRange);
+            Gizmos.DrawWireSphere(transform.position,_attackRange);
         }
     }
 

@@ -12,9 +12,9 @@ public class UIManager : MonoBehaviour
     [Inject] private GameManager _gameManager;
     [Inject] private WaveManager _waveManager;
  
-    public TowerData[] availableTowers; // Inspector'dan eklenecek kuleler
+    public TowerData[] availableTowers;
 
-    private TowerData selectedTower;
+    private TowerData _selectedTower;
     public TextMeshProUGUI currencyText;
 
     private void Update() {

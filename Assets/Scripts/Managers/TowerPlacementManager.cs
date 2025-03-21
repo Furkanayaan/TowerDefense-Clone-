@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Zenject;
 
 public class TowerPlacementManager : MonoBehaviour
 {
-    //ToDo : UIdaki kulelerin tiklandigi zaman tasinmasini yap,
-    //ToDo : sonra enemy'e gec
-    
     
     [Inject] private TowerFactory _towerFactory;
     [Inject] private GridManager _gridManager;
@@ -20,24 +18,25 @@ public class TowerPlacementManager : MonoBehaviour
     private bool _canPlace = false;
     private bool _isAvailable = false;
     public float activationDistance = 2f;
-    public Camera _camera;
-    [ShowInInspector]private Vector3 gridPosition;
-    private TowerData selectedTowerData;
+    [ShowInInspector]private Vector3 _gridPosition;
+    private TowerData _selectedTowerData;
     private GameObject _ghostInstance;
     private bool _hasAnimated = false;
     private bool _bDeleteTower = false;
     public Transform deleteCube;
+    private List<Transform> _allTowers = new();
 
     private void Start() {
         float cameraXPos = (_gridManager.maksCellOnRow - 1) * _gridManager.cellSize / 2f;
+        Camera cam = Camera.main;
         
-        _camera.transform.position = new Vector3(cameraXPos, _camera.transform.position.y, _camera.transform.position.z);
+        cam.transform.position = new Vector3(cameraXPos, cam.transform.position.y, cam.transform.position.z);
         SetTransparency(0f);
     }
     
     public void SetSelectedTower(TowerData towerData)
     {
-        selectedTowerData = towerData;
+        _selectedTowerData = towerData;
 
         if (_ghostInstance != null) {
             Destroy(_ghostInstance);
@@ -59,20 +58,21 @@ public class TowerPlacementManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && _isAvailable) {
             
             //Destroy tower on cell
-            if (!_canPlace && selectedTowerData == null && _bDeleteTower) {
-                Transform tower = _gridManager.GetCellTransform(gridPosition);
+            if (!_canPlace && _selectedTowerData == null && _bDeleteTower) {
+                Transform tower = _gridManager.GetCellTransform(_gridPosition);
                 if(tower == null) return;
                 TowerData data = tower.GetComponent<BaseTower>().Data();
                 int cost = data.cost;
                 _gameManager.AddCurrency(cost);
+                _allTowers.Remove(tower);
                 Destroy(tower.gameObject);
-                _gridManager.SetCellAvailable(gridPosition);
+                _gridManager.SetCellAvailable(_gridPosition);
                 RemoveDeleteTowerCube();
 
             }
             
             //Place tower on cell
-            if(_canPlace && selectedTowerData != null) PlaceTower();
+            if(_canPlace && _selectedTowerData != null) PlaceTower();
             
         }
     }
@@ -84,17 +84,17 @@ public class TowerPlacementManager : MonoBehaviour
         
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _gridManager.placementLayer)) {
-            gridPosition = _gridManager.GetCellPosition(hit.point);
-            _ghostInstance.transform.position = !_bDeleteTower ? gridPosition + Vector3.up : gridPosition;
+            _gridPosition = _gridManager.GetCellPosition(hit.point);
+            _ghostInstance.transform.position = !_bDeleteTower ? _gridPosition + Vector3.up : _gridPosition;
             
-            float distance = Vector3.Distance(hit.point, gridPosition);
+            float distance = Vector3.Distance(hit.point, _gridPosition);
 
             if (distance <= activationDistance) {
                 
-                _isAvailable = _gridManager.IsCellAvailable(gridPosition);
+                _isAvailable = _gridManager.IsCellAvailable(_gridPosition);
                 if(!_isAvailable) return;
 
-                _canPlace = _gridManager.IsCellEmpty(gridPosition);
+                _canPlace = _gridManager.IsCellEmpty(_gridPosition);
                 
                 SetTransparency(0.5f);
                 if (!_hasAnimated && !_bDeleteTower) {
@@ -129,16 +129,16 @@ public class TowerPlacementManager : MonoBehaviour
     }
     private void SetTransparency(float alpha)
     {
-        if(_ghostInstance == null || selectedTowerData == null) return;
-        Color color = selectedTowerData.ghostMaterial.color;
+        if(_ghostInstance == null || _selectedTowerData == null) return;
+        Color color = _selectedTowerData.ghostMaterial.color;
         color.a = alpha;
-        selectedTowerData.ghostMaterial.color = color;
+        _selectedTowerData.ghostMaterial.color = color;
     }
     private void HideGhost() {
         _canPlace = false;
         SetTransparency(0f);
         if (_ghostInstance != null) {
-            if(selectedTowerData != null) _ghostTowerPool.ReturnCurrentGhost(selectedTowerData);
+            if(_selectedTowerData != null) _ghostTowerPool.ReturnCurrentGhost(_selectedTowerData);
             _ghostInstance = null;
         }
     }
@@ -154,17 +154,18 @@ public class TowerPlacementManager : MonoBehaviour
             return;
         }
 
-        BaseTower newTower = _towerFactory.CreateTower(selectedTowerData, position);
+        BaseTower newTower = _towerFactory.CreateTower(_selectedTowerData, position);
         _gridManager.SetCellOccupied(position, newTower.transform);
+        _allTowers.Add(newTower.transform);
         SetTransparency(1f);
         HideGhost();
-        selectedTowerData = null;
+        _selectedTowerData = null;
         
         Debug.Log("Tower has been successfully placed.");
     }
 
     public void DeleteTower() {
-        if(_waveManager.IsWaveInProgress) return;
+        if(_waveManager.IsWaveInProgress || !IsAnyTowerOnCell()) return;
         
         _bDeleteTower = true;
         deleteCube.gameObject.SetActive(true);
@@ -175,5 +176,9 @@ public class TowerPlacementManager : MonoBehaviour
         _bDeleteTower = false;
         deleteCube.gameObject.SetActive(false);
         _ghostInstance = null;
+    }
+
+    public bool IsAnyTowerOnCell() {
+        return _allTowers.Count > 0;
     }
 }

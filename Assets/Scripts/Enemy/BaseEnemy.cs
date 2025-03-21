@@ -1,56 +1,59 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
-public class BaseEnemy : MonoBehaviour
-{
+public class BaseEnemy : MonoBehaviour {
+    
     [SerializeField] protected EnemyData enemyData;
-    private Transform targetPoint;
+    private Transform _targetPoint;
     private float _currentHealth;
-    private bool isMoving = true;
+    private bool _isMoving = true;
+    private bool _isFinishing = false;
     protected Rigidbody _rb;
 
-    public System.Action OnDeath;
+    public Action OnDeathOrFinish;
 
     public void Initialize(Transform target)
     {
-        targetPoint = target;
+        _targetPoint = target;
         _currentHealth = enemyData.maxHealth;
-        isMoving = true;
+        _isMoving = true;
+        _isFinishing = false;
         _rb = GetComponent<Rigidbody>();
     }
 
     protected virtual void Update() {
-        if(!isMoving || targetPoint == null) return;
+        if(!_isMoving || _targetPoint == null || _isFinishing) return;
         MoveToTarget();
     }
 
     private void MoveToTarget() {
-        Vector3 dir = (targetPoint.position - transform.position).normalized;
+        Vector3 dir = (_targetPoint.position - transform.position).normalized;
         Vector3 movement = dir * enemyData.moveSpeed;
 
         _rb.velocity = movement;
 
-        if (Vector3.Distance(transform.position, targetPoint.position) < 2f) {
-            Destroy(gameObject);
+        if (Vector3.Distance(transform.position, _targetPoint.position) < 2f) {
+            OnDeathOrFinish?.Invoke();
+            _isFinishing = true;
         }
     }
 
     public void TakeDamage(float amount)
     {
         _currentHealth -= amount;
-        if (_currentHealth <= 0)
-        {
-            OnDeath?.Invoke();
-            Destroy(gameObject);
+        if (_currentHealth <= 0) {
+            OnDeathOrFinish?.Invoke();
         }
     }
 
     public EnemyData GetEnemyData() => enemyData;
     public void StopMovement() {
-        isMoving = false;
+        _isMoving = false;
         if (_rb != null) _rb.velocity = Vector3.zero;
     }
 
-    public void ResumeMovement() => isMoving = true;
+    public void ResumeMovement() => _isMoving = true;
 }

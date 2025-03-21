@@ -14,8 +14,9 @@ public class TowerFactory
         Vector3 towerScale = newTower.transform.GetChild(0).localScale;
         Vector3 towerPos = newTower.transform.position;
         
-        newTower.transform.position =
-            new Vector3(towerPos.x, towerScale.y / 2f, towerPos.z);
+        Vector3 towerNewPos = new Vector3(towerPos.x, towerScale.y / 2f, towerPos.z);
+        
+        newTower.transform.position = towerNewPos;
         return newTower;
     } 
 }

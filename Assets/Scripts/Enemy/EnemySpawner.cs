@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
+using ObjectsType;
+using UnityEngine.Serialization;
 
 public class EnemySpawner : MonoBehaviour {
     
@@ -9,25 +13,101 @@ public class EnemySpawner : MonoBehaviour {
     [Header("Enemy Prefab")]
     [SerializeField] private GameObject runnerPrefab;
     [SerializeField] private GameObject attackerPrefab;
+    public int preWarmCount = 10;
+    
+    [Header("Parent References")]
+    public Transform activeRunnerParent;
+    public Transform deactiveRunnerParent;
+    public Transform activeAttackerParent;
+    public Transform deactiveAttackerParent;
+    
+    private Queue<GameObject> _runnerPool = new();
+    private Queue<GameObject> _attackerPool = new();
     
 
-    private List<BaseEnemy> activeEnemies = new();
+    private List<BaseEnemy> _activeEnemies = new();
+
+    private void Start() {
+        PrewarmPool(runnerPrefab, _runnerPool, deactiveRunnerParent);
+        PrewarmPool(attackerPrefab, _attackerPool, deactiveAttackerParent);
+    }
+    
+    private void PrewarmPool(GameObject prefab, Queue<GameObject> pool, Transform parent)
+    {
+        for (int i = 0; i < preWarmCount; i++) {
+            GameObject enemyGameObject = Instantiate(prefab, parent);
+            pool.Enqueue(enemyGameObject);
+        }
+    }
+    
+    public GameObject GetFromPool(GameObject prefab, Transform activeParent) {
+        GameObject enemyGameObject;
+        ObjectTypes type = prefab.GetComponent<BaseEnemy>().GetEnemyData().type;
+        
+        Queue<GameObject> pool = type == ObjectTypes.RunnerEnemy ? _runnerPool : _attackerPool;
+
+        if (pool.Count > 0)
+            enemyGameObject = pool.Dequeue();
+        
+        else
+            enemyGameObject = Instantiate(prefab);
+
+        enemyGameObject.transform.SetParent(activeParent);
+        
+        return enemyGameObject;
+    }
+    
+    public void ReturnToPool(GameObject enemyGameObject) {
+        
+        BaseEnemy baseEnemy = enemyGameObject.GetComponent<BaseEnemy>();
+        if(baseEnemy == null) return;
+        
+        ObjectTypes type = baseEnemy.GetEnemyData().type;
+        Queue<GameObject> pool = type == ObjectTypes.RunnerEnemy ? _runnerPool : _attackerPool;
+        
+        
+        switch (baseEnemy.GetEnemyData().type) {
+            case ObjectTypes.RunnerEnemy:
+                enemyGameObject.transform.SetParent(deactiveRunnerParent);
+                break;
+            case ObjectTypes.AttackerEnemy:
+                enemyGameObject.transform.SetParent(deactiveAttackerParent);
+                break;
+        }
+
+        pool.Enqueue(enemyGameObject);
+    }
 
     public void SpawnRandomEnemy(int offsetIndex = 0)
     {
-        GameObject prefab = Random.value < 0.5f ? runnerPrefab : attackerPrefab;
+        bool isRunner = Random.value < 0.5f;
+        GameObject prefab = isRunner ? runnerPrefab : attackerPrefab;
+        
+        Transform activeParent = isRunner ? activeRunnerParent : activeAttackerParent;
+        
+        
         Vector3 offset = new Vector3(offsetIndex * 1.5f, 0, 0);
         Vector3 spawnPos = _enemyRoadPoints.GetInitTransform().position + offset;
 
-        GameObject enemyGO = Instantiate(prefab, spawnPos, Quaternion.identity);
-        BaseEnemy enemy = enemyGO.GetComponent<BaseEnemy>();
+        //GameObject enemyGameObject = Instantiate(prefab, spawnPos, Quaternion.identity);
+        GameObject enemyGameObject = GetFromPool(prefab, activeParent);
+        enemyGameObject.transform.position = spawnPos;
+        
+        BaseEnemy enemy = enemyGameObject.GetComponent<BaseEnemy>();
         enemy.Initialize(_enemyRoadPoints.GetTargetTransform());
-        activeEnemies.Add(enemy);
-        enemy.OnDeath += () => activeEnemies.Remove(enemy);
+        _activeEnemies.Add(enemy);
+        enemy.OnDeathOrFinish += () => {
+            RemoveEnemy(enemy, enemyGameObject);
+        };
+    }
+
+    public void RemoveEnemy(BaseEnemy enemy, GameObject enemyGameObject) {
+        _activeEnemies.Remove(enemy);
+        ReturnToPool(enemyGameObject);
     }
 
     public bool AllEnemiesDead()
     {
-        return activeEnemies.Count == 0;
+        return _activeEnemies.Count == 0;
     }
 }
