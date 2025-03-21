@@ -17,7 +17,6 @@ public abstract class BaseTower : MonoBehaviour {
         attackSpeed = data.attackSpeed;
         health = data.health;
         attackRange = data.attackRange;
-        
         attackCoroutine = StartCoroutine(AttackRoutine());
     }
 

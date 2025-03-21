@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 668f2c82a4f908444a17560dd7437314, type: 3}
-  m_Name: BombTower
+  m_Name: SlowTower
   m_EditorClassIdentifier: 
-  towerName: BombTower
+  towerType: 1
   cost: 75
   damage: 20
   attackSpeed: 10
   health: 75
   attackRange: 30
   towerPrefab: {fileID: 9123806731000674105, guid: 2b76c327020250741a427914063257f8, type: 3}
+  ghostMaterial: {fileID: 2100000, guid: 7c15377265088864c80c0889cbb6377b, type: 2}

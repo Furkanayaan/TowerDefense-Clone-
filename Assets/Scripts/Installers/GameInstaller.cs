@@ -18,5 +18,7 @@ public class GameInstaller : MonoInstaller
         Container.Bind<TowerFactory>().AsSingle();
         Container.Bind<GameManager>().FromComponentInHierarchy().AsSingle();
         Container.Bind<TowerPlacementManager>().FromComponentInHierarchy().AsSingle();
+        
+        Container.Bind<GhostTowerPool>().FromComponentInHierarchy().AsSingle();
     }
 }
