@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArrowTower : BaseTower
+public class SlowTower : BaseTower
 {
     protected override void Attack() {
         

@@ -16,6 +16,7 @@ public class TowerPlacementManager : MonoBehaviour
     [Inject] private GridManager _gridManager;
     [Inject] private GameManager _gameManager;
     [Inject] private GhostTowerPool _ghostTowerPool;
+    [Inject] private WaveManager _waveManager;
     private bool _canPlace = false;
     private bool _isAvailable = false;
     public float activationDistance = 2f;
@@ -28,7 +29,9 @@ public class TowerPlacementManager : MonoBehaviour
     public Transform deleteCube;
 
     private void Start() {
-        _camera.transform.position = new Vector3((_gridManager.maksCellOnRow-1) * _gridManager.cellSize/2f, _camera.transform.position.y, _camera.transform.position.z);
+        float cameraXPos = (_gridManager.maksCellOnRow - 1) * _gridManager.cellSize / 2f;
+        
+        _camera.transform.position = new Vector3(cameraXPos, _camera.transform.position.y, _camera.transform.position.z);
         SetTransparency(0f);
     }
     
@@ -50,6 +53,8 @@ public class TowerPlacementManager : MonoBehaviour
 
     private void Update()
     {
+        if(_waveManager.IsWaveInProgress) return;
+        
         UpdateGhostTowerPos();
         if (Input.GetMouseButtonDown(0) && _isAvailable) {
             
@@ -159,6 +164,8 @@ public class TowerPlacementManager : MonoBehaviour
     }
 
     public void DeleteTower() {
+        if(_waveManager.IsWaveInProgress) return;
+        
         _bDeleteTower = true;
         deleteCube.gameObject.SetActive(true);
         _ghostInstance = deleteCube.gameObject;

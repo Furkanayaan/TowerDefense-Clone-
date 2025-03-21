@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TowersType;
+using ObjectsType;
 
 public class GhostTowerPool : MonoBehaviour {
     [Header("Fast Tower")]
@@ -18,13 +18,13 @@ public class GhostTowerPool : MonoBehaviour {
         
         Transform from = null;
         Transform to = null;
-        switch (towerData.towerType)
+        switch (towerData.objectType)
         {
-            case TowerTypes.Fast:
+            case ObjectTypes.FastTower:
                 from = deActiveFastTower;
                 to = activeFastTower;
                 break;
-            case TowerTypes.Slow:
+            case ObjectTypes.SlowTower:
                 from = deActiveSlowTower;
                 to = activeSlowTower;
                 break;
@@ -46,12 +46,12 @@ public class GhostTowerPool : MonoBehaviour {
 
         Transform to = null;
         
-        switch (towerData.towerType)
+        switch (towerData.objectType)
         {
-            case TowerTypes.Fast:
+            case ObjectTypes.FastTower:
                 to = deActiveFastTower;
                 break;
-            case TowerTypes.Slow:
+            case ObjectTypes.SlowTower:
                 to = deActiveSlowTower;
                 break;
         }

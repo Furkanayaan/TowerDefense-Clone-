@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TowersType 
+public class FastTower : BaseTower
 {
-    public enum TowerTypes {
-        Fast,
-        Slow
+    protected override void Attack() {
+        
     }
 }

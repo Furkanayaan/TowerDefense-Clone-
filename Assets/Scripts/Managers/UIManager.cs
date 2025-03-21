@@ -10,7 +10,8 @@ public class UIManager : MonoBehaviour
     [Inject] private GridManager _gridManager;
     [Inject] private TowerPlacementManager _towerPlacementManager;
     [Inject] private GameManager _gameManager;
-
+    [Inject] private WaveManager _waveManager;
+ 
     public TowerData[] availableTowers; // Inspector'dan eklenecek kuleler
 
     private TowerData selectedTower;
@@ -20,8 +21,9 @@ public class UIManager : MonoBehaviour
         currencyText.text = _gameManager.playerCurrency.ToString();
     }
 
-    public void SelectTower(int index)
-    {
+    public void SelectTower(int index) {
+        if(_waveManager.IsWaveInProgress) return;
+        
         if (index >= 0 && index < availableTowers.Length && _gameManager.TrySpendCurrency(availableTowers[index].cost))
         {
             _towerPlacementManager.SetSelectedTower(availableTowers[index]);
@@ -29,6 +31,8 @@ public class UIManager : MonoBehaviour
     }
 
     public void AddCell() {
+        if(_waveManager.IsWaveInProgress) return;
+        
         _gridManager.cellCount[_gridManager.rowCount]++;
         if (_gridManager.cellCount[_gridManager.rowCount] >= _gridManager.maksCellOnRow) {
             _gridManager.rowCount++;
