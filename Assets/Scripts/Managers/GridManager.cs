@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Zenject;
 
 public class GridManager : MonoBehaviour
 {
@@ -86,10 +87,15 @@ public class GridManager : MonoBehaviour
         
         if (gridCells.ContainsKey(cell) && gridTower[cell] != null) {
             gridCells[cell] = false;
-            Destroy(gridTower[cell].gameObject);
             gridTower[cell] = null;
             Debug.Log($"Cell {cell} has been marked as empty again.");
         }
+    }
+
+    public Transform GetCellTransform(Vector3 worldPosition) {
+        Vector2Int cell = WorldToGrid(worldPosition);
+        if (!gridTower.ContainsKey(cell)) return null;
+        return gridTower[cell];
     }
 
     private Vector2Int WorldToGrid(Vector3 worldPosition)

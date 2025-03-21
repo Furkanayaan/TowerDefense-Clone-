@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public class Tower : MonoBehaviour
+public class TowerShop : MonoBehaviour
 {
-    public class Factory : PlaceholderFactory<Tower> { }
+    
 }

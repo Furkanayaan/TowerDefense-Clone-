@@ -6,8 +6,13 @@ using Zenject;
 
 public class TowerPlacementManager : MonoBehaviour
 {
-    [Inject] private Tower.Factory _towerFactory;
+    //ToDo : UIdaki kulelerin tiklandigi zaman tasinmasini yap,
+    //ToDo : sonra enemy'e gec
+    
+    
+    [Inject] private TowerFactory _towerFactory;
     [Inject] private GridManager _gridManager;
+    [Inject] private GameManager _gameManager;
     private bool _canPlace = false;
     private bool _isAvailable = false;
     public float activationDistance = 2f;
@@ -15,25 +20,58 @@ public class TowerPlacementManager : MonoBehaviour
     public Material ghostMaterial;
     public Camera _camera;
     private Vector3 gridPosition;
+    private TowerData selectedTowerData;
+    private GameObject _ghostInstance;
 
     private void Start() {
         _camera.transform.position = new Vector3((_gridManager.maksCellOnRow-1) * _gridManager.cellSize/2f, _camera.transform.position.y, _camera.transform.position.z);
         SetTransparency(true, 0f);
+    }
+    
+    public void SetSelectedTower(TowerData towerData)
+    {
+        selectedTowerData = towerData;
+
+        if (_ghostInstance != null) {
+            Destroy(_ghostInstance);
+        }
+
+        _ghostInstance = Instantiate(towerData.towerPrefab);
+        ghostTower = _ghostInstance.transform;
+
+        var renderer = _ghostInstance.GetComponentInChildren<Renderer>();
+        if (renderer != null) {
+            ghostMaterial = renderer.material;
+            SetTransparency(true, 0.5f);
+        }
+
     }
 
     private void Update()
     {
         UpdateGhostTowerPos();
         if (Input.GetMouseButtonDown(0) && _isAvailable) {
-            //Place tower on cell
-            if(_canPlace) PlaceTower();
+            
             //Destroy tower on cell
-            else _gridManager.SetCellAvailable(gridPosition);
+            if (!_canPlace && selectedTowerData == null) {
+                Transform tower = _gridManager.GetCellTransform(gridPosition);
+                if(tower == null) return;
+                TowerData data = tower.GetComponent<BaseTower>().Data();
+                int cost = data.cost;
+                _gameManager.AddCurrency(cost);
+                Destroy(tower.gameObject);
+                _gridManager.SetCellAvailable(gridPosition);
+                
+            }
+            
+            //Place tower on cell
+            if(_canPlace && selectedTowerData != null) PlaceTower();
             
         }
     }
 
     private void UpdateGhostTowerPos() {
+        
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _gridManager.placementLayer)) {
             gridPosition = _gridManager.GetCellPosition(hit.point);
@@ -45,7 +83,7 @@ public class TowerPlacementManager : MonoBehaviour
 
                 _canPlace = _gridManager.IsCellEmpty(gridPosition);
                 ghostTower.position = gridPosition;
-                SetTransparency(_canPlace, 0.5f);
+                SetTransparency(_canPlace && selectedTowerData != null, 0.5f);
             }
             else {
                 HideGhost();
@@ -54,20 +92,24 @@ public class TowerPlacementManager : MonoBehaviour
         else {
             HideGhost();
             _isAvailable = false;
-            _canPlace = false;
         }
     }
     private void SetTransparency(bool canPlace, float alpha)
     {
         Color color = ghostMaterial.color;
-        if (canPlace) color = Color.green;
-        else color = Color.red;
+        //if (canPlace) color = Color.green;
+        //else color = Color.red;
         color.a = alpha;
         ghostMaterial.color = color;
     }
     private void HideGhost() {
         _canPlace = false;
         SetTransparency(_canPlace, 0f);
+        // if (_ghostInstance != null) {
+        //     Destroy(_ghostInstance);
+        //     _ghostInstance = null;
+        //     ghostTower = null;
+        // }
     }
 
     private void PlaceTower()
@@ -81,9 +123,10 @@ public class TowerPlacementManager : MonoBehaviour
             return;
         }
 
-        Tower newTower = _towerFactory.Create();
-        newTower.transform.position = new Vector3(position.x,newTower.transform.localScale.y/2f,position.z);
+        BaseTower newTower = _towerFactory.CreateTower(selectedTowerData, position);
         _gridManager.SetCellOccupied(position, newTower.transform);
+        selectedTowerData = null;
+        HideGhost();
         Debug.Log("Tower has been successfully placed.");
     }
 }

@@ -5,19 +5,18 @@ using Zenject;
 
 public class GameInstaller : MonoInstaller
 {
-    public GameObject towerPrefab; // Tower prefab
     public GridManager gridManagerPrefab; // GridManager prefab
 
     public override void InstallBindings()
     {
-        // Tower Factory
-        Container.BindFactory<Tower, Tower.Factory>()
-            .FromComponentInNewPrefab(towerPrefab)
-            .AsTransient();
-
+        
         // Grid Manager
         GridManager gridManagerInstance = 
             Container.InstantiatePrefabForComponent<GridManager>(gridManagerPrefab);
         Container.Bind<GridManager>().FromInstance(gridManagerInstance).AsSingle();
+        
+        Container.Bind<TowerFactory>().AsSingle();
+        Container.Bind<GameManager>().FromComponentInHierarchy().AsSingle();
+        Container.Bind<TowerPlacementManager>().FromComponentInHierarchy().AsSingle();
     }
 }
