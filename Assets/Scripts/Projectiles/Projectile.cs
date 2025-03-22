@@ -24,7 +24,7 @@ public class Projectile : MonoBehaviour
     {
         if (_targetTransform == null || !_targetTransform.gameObject.activeInHierarchy)
         {
-            _pool.ReturnProjectile(gameObject);
+            _pool.PoolProjectile(gameObject);
             return;
         }
         
@@ -34,7 +34,7 @@ public class Projectile : MonoBehaviour
         if (Vector3.Distance(transform.position, _targetTransform.transform.position) < 0.2f)
         {
             _targetDamageable.TakeDamage(_damage);
-            _pool.ReturnProjectile(gameObject);
+            _pool.PoolProjectile(gameObject);
         }
     }
 }

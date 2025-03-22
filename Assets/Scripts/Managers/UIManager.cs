@@ -7,11 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zenject;
 
-public class UIManager : MonoBehaviour
-{
-    //ToDo : Kuleler, etki alanlarına giren düşmanlara otomatik olarak saldırır.
-    //ToDo : Kendisine saldıran düşman olduğunda odağını yönlendirir
-    //ToDo : ve saldıran düşmanlar arasında canı az olandan çok olana önceliklendirme yapar.
+public class UIManager : MonoBehaviour {
     
     //ToDo : Genel kod kontrolu
     //ToDo : Grid sistemini duzeltme
@@ -29,6 +25,9 @@ public class UIManager : MonoBehaviour
 
     public Image healthFill;
     public GameObject failUI;
+    public TextMeshProUGUI totalTowerCount;
+    public TextMeshProUGUI totalWaveCount;
+    public TextMeshProUGUI nextWaveSec;
     private bool _isLoseControl;
 
     private void Start() {
@@ -36,7 +35,10 @@ public class UIManager : MonoBehaviour
     }
 
     private void Update() {
-        currencyText.text = _gameManager.playerCurrency.ToString();
+        currencyText.text = "X" + _gameManager.playerCurrency;
+        totalWaveCount.text = "Wave Count : " + _waveManager.TotalWaveCount();
+        totalTowerCount.text = "Tower Count : " + _towerPlacementManager.TotalTower();
+        _waveManager.SetNextWaveSec(nextWaveSec);
         HealthBar();
     }
 

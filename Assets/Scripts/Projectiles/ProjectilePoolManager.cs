@@ -21,13 +21,15 @@ public class ProjectilePoolManager : MonoBehaviour
         }
     }
 
-    public GameObject GetProjectile() {
+    public GameObject GetProjectile()
+    {
         GameObject proj = _pool.Count > 0 ? _pool.Dequeue() : Instantiate(projectilePrefab);
         proj.transform.SetParent(activeParent);
         return proj;
     }
 
-    public void ReturnProjectile(GameObject proj) {
+    public void PoolProjectile(GameObject proj)
+    {
         proj.transform.SetParent(deactiveParent);
         _pool.Enqueue(proj);
     }

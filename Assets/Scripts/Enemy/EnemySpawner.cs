@@ -116,7 +116,8 @@ public class EnemySpawner : MonoBehaviour {
         ReturnToPool(enemyGameObject);
         if (bDeath) {
             int reward = enemy.GetEnemyData().rewardAmount;
-            _gameManager.AddCurrency(reward);
+            _gameManager.GoldPoolToGo(reward, enemyGameObject.transform.position);
+            //_gameManager.AddCurrency(reward);
         }
         else {
             int damageBase = enemy.GetEnemyData().damageOnBase;

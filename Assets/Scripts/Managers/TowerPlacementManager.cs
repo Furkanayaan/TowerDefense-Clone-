@@ -53,7 +53,11 @@ public class TowerPlacementManager : MonoBehaviour
     private void Update()
     {
         if (_waveManager.IsWaveInProgress || _gameManager.IsLose()) {
-            _ghostInstance = null;
+            if (_ghostInstance != null && _selectedTowerData != null) {
+                int cost = _selectedTowerData.cost;
+                _gameManager.GoldPoolToGo(cost, _ghostInstance.transform.position);
+                _ghostInstance = null;
+            }
             return;
         }
         
@@ -66,8 +70,9 @@ public class TowerPlacementManager : MonoBehaviour
                 if(tower == null) return;
                 TowerData data = tower.GetComponent<BaseTower>().Data();
                 int cost = data.cost;
-                _gameManager.AddCurrency(cost);
-                _allTowers.Remove(tower);
+                //_gameManager.AddCurrency(cost);
+                _gameManager.GoldPoolToGo(cost, tower.position);
+                RemoveTowerFromList(tower);
                 Destroy(tower.gameObject);
                 _gridManager.SetCellAvailable(_gridPosition);
                 RemoveDeleteTowerCube();
@@ -149,22 +154,13 @@ public class TowerPlacementManager : MonoBehaviour
     private void PlaceTower()
     {
         Vector3 position = _ghostInstance.transform.position;
-
-        Debug.Log($"Placement Point: {position}");
-        if (!_gridManager.IsCellAvailable(position))
-        {
-            Debug.Log("ERROR: The grid considers this cell as filled!");
-            return;
-        }
-
+        
         BaseTower newTower = _towerFactory.CreateTower(_selectedTowerData, position);
         _gridManager.SetCellOccupied(position, newTower.transform);
         _allTowers.Add(newTower.transform);
         SetTransparency(1f);
         HideGhost();
         _selectedTowerData = null;
-        
-        Debug.Log("Tower has been successfully placed.");
     }
 
     public void DeleteTower() {
@@ -183,5 +179,13 @@ public class TowerPlacementManager : MonoBehaviour
 
     public bool IsAnyTowerOnCell() {
         return _allTowers.Count > 0;
+    }
+
+    public int TotalTower() {
+        return _allTowers.Count;
+    }
+
+    public void RemoveTowerFromList(Transform tower) {
+        _allTowers.Remove(tower);
     }
 }

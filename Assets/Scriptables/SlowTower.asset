@@ -16,7 +16,7 @@ MonoBehaviour:
   cost: 75
   damage: 20
   attackSpeed: 1
-  health: 75
+  health: 100
   attackRange: 10
   projectileSpeed: 5
   towerPrefab: {fileID: 9123806731000674105, guid: 2b76c327020250741a427914063257f8, type: 3}

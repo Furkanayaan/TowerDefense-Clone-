@@ -8,6 +8,7 @@ using Zenject;
 public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
     [Inject] protected EnemySpawner _enemySpawner;
     [Inject] protected ProjectilePoolManager _projectilePoolManager;
+    [Inject] private TowerPlacementManager _towerPlacementManager;
     protected float _damage;
     private float _attackSpeed;
     private float _attackRange;
@@ -44,6 +45,7 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
         }
     }
 
+    //ToDo : tek for ile coz en dusuk hpli olan dusman listenin sonunda olsun
     protected Transform FindBestEnemyInRange() {
         
         List<BaseEnemy> enemies = _enemySpawner.AllEnemies();
@@ -89,6 +91,7 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
     public void TakeDamage(float amount) {
         CurrentHealth -= amount;
         if (CurrentHealth <= 0) {
+            _towerPlacementManager.RemoveTowerFromList(transform);
             Destroy(gameObject);
         }
     }
