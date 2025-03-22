@@ -5,7 +5,7 @@ using UnityEngine;
 public class SlowTower : BaseTower
 {
     protected override void Attack() {
-        Transform targetTransform = FindNearestEnemyInRange();
+        Transform targetTransform = FindBestEnemyInRange();
         if (targetTransform != null) {
             IDamageable targetDamageable = targetTransform.GetComponent<IDamageable>();
             if (targetDamageable != null) {

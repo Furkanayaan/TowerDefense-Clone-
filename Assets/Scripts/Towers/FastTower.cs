@@ -5,7 +5,7 @@ using UnityEngine;
 public class FastTower : BaseTower
 {
     protected override void Attack() {
-        Transform targetTransform = FindNearestEnemyInRange();
+        Transform targetTransform = FindBestEnemyInRange();
         if (targetTransform != null && targetTransform.gameObject.activeInHierarchy) {
             IDamageable targetDamageable = targetTransform.GetComponent<IDamageable>();
             if (targetDamageable != null) {

@@ -2885,8 +2885,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delayBetweenWaves: 5
-  minEnemiesPerWave: 3
-  maxEnemiesPerWave: 7
+  minEnemiesPerWave: 5
+  maxEnemiesPerWave: 8
 --- !u!4 &1429404038
 Transform:
   m_ObjectHideFlags: 0

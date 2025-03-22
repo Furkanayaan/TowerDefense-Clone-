@@ -50,7 +50,7 @@ public class AttackerEnemy : BaseEnemy {
         _attackTimer += Time.deltaTime;
         if (_attackTimer >= _nextAttackTime) {
             FireProjectile();
-            _nextAttackTime = 1f / Mathf.Max(GetEnemyData().attackSpeed, 0.01f);
+            _nextAttackTime = 5f / Mathf.Max(GetEnemyData().attackSpeed, 0.01f);
             _attackTimer = 0f;
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ObjectsType;
 using UnityEngine;
 using Zenject;
 
@@ -43,25 +44,42 @@ public abstract class BaseTower : MonoBehaviour, IDamageable, IHealth {
         }
     }
 
-    protected Transform FindNearestEnemyInRange() {
+    protected Transform FindBestEnemyInRange() {
         
         List<BaseEnemy> enemies = _enemySpawner.AllEnemies();
-        Transform closest = null;
+        List<BaseEnemy> attackersInRange = new();
+        
+        Transform targetEnemy = null;
         float minDistance = Mathf.Infinity;
 
         for (int i = 0; i < enemies.Count; i++)
         {
             BaseEnemy enemy = enemies[i];
             float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            if(distance > _attackRange) continue;
 
-            if (distance <= _attackRange && distance < minDistance)
-            {
-                closest = enemy.transform;
+            if (enemy.GetEnemyData().type == ObjectTypes.AttackerEnemy) {
+                attackersInRange.Add(enemy);
+            }
+
+            if (distance < minDistance) {
+                targetEnemy = enemy.transform;
                 minDistance = distance;
             }
         }
+
+        float refHealth = Mathf.Infinity;
+        if (attackersInRange.Count > 0) {
+            for (int i = 0; i < attackersInRange.Count; i++) {
+                float getHealth = attackersInRange[i].CurrentHealth;
+                if (getHealth <= refHealth) {
+                    targetEnemy = attackersInRange[i].transform;
+                    refHealth = getHealth;
+                }
+            }
+        }
         
-        return closest;
+        return targetEnemy;
     }
 
     protected abstract void Attack();

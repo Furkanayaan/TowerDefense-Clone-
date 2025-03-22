@@ -9,6 +9,14 @@ using Zenject;
 
 public class UIManager : MonoBehaviour
 {
+    //ToDo : Kuleler, etki alanlarına giren düşmanlara otomatik olarak saldırır.
+    //ToDo : Kendisine saldıran düşman olduğunda odağını yönlendirir
+    //ToDo : ve saldıran düşmanlar arasında canı az olandan çok olana önceliklendirme yapar.
+    
+    //ToDo : Genel kod kontrolu
+    //ToDo : Grid sistemini duzeltme
+    //ToDo : Dokumantasyon yazma
+    
     [Inject] private GridManager _gridManager;
     [Inject] private TowerPlacementManager _towerPlacementManager;
     [Inject] private GameManager _gameManager;
