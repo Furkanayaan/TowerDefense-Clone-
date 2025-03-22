@@ -14,39 +14,23 @@ public class AttackerEnemy : BaseEnemy {
     public void SetPoolManager(ProjectilePoolManager pool) {
         _projectilePoolManager = pool;
     }
-    protected override void Update()
+    
+    protected override void OnMovingUpdate()
     {
-        if (_targetTower != null) {
-            if (_targetTower.Equals(null)) {
-                ClearTarget();
-            }
-            else {
-                float dist = Vector3.Distance(transform.position, _targetTower.position);
-
-                if (dist > GetEnemyData().attackRange) {
-                    ClearTarget();
-                }
-                else {
-                    RotateToTarget(_targetTower);
-                    StopMovement();
-                    HandleAttack();
-                    return;
-                }
-            }
-        }
-        else {
-            SearchForTower();
-        }
-
-        base.Update();
+        SearchForTower();
+    }
+    
+    protected override void OnAttackingUpdate()
+    {
+        if (_targetTower == null) return;
+        RotateToTarget(_targetTower);
+        GetEnemyNavMesh.isStopped = true;
+        GetEnemyNavMesh.velocity = Vector3.zero;
+        HandleAttack();
     }
 
-    private void ClearTarget() {
-        _targetTower = null;
-        ResumeMovement();
-    }
-
-    private void HandleAttack() {
+    private void HandleAttack()
+    {
         _attackTimer += Time.deltaTime;
         if (_attackTimer >= _nextAttackTime) {
             FireProjectile();
@@ -76,7 +60,7 @@ public class AttackerEnemy : BaseEnemy {
                 _targetTower = tower.transform;
                 _targetBaseTower = tower;
                 _targetBaseTower.OnTowerDestroyed += HandleTowerDestroyed;
-                StopMovement();
+                ChangeState(EnemyState.Attacking);
                 break;
             }
         }
@@ -88,7 +72,8 @@ public class AttackerEnemy : BaseEnemy {
         {
             _targetTower = null;
             _targetBaseTower = null;
-            ResumeMovement();
+            ChangeState(EnemyState.Moving);
         }
     }
+    
 }

@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 1950669222054708391}
   - component: {fileID: 7485037597475160643}
   - component: {fileID: 100606048996117483}
+  - component: {fileID: 8150908832269463144}
   m_Layer: 0
   m_Name: SlowTower
   m_TagString: Untagged
@@ -250,6 +251,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fillImage: {fileID: 3932694855805322917}
   bar: {fileID: 7689953035496683890}
+--- !u!208 &8150908832269463144
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9123806731000674105}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1001 &9078746044732866464
 PrefabInstance:
   m_ObjectHideFlags: 0

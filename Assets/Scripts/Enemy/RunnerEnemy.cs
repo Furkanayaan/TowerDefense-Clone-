@@ -4,8 +4,5 @@ using UnityEngine;
 
 public class RunnerEnemy : BaseEnemy
 {
-    protected override void Update() {
-        base.Update();
-    }
-        
+    
 }

@@ -2,16 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Zenject;
 
 public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
 {
-    //State ekle
+    
+    public enum EnemyState
+    {
+        Idle,
+        Moving,
+        Attacking,
+    }
+    private EnemyState _currentState = EnemyState.Idle;
+    
     [SerializeField] private EnemyData enemyData;
-    private Transform _targetPoint;
-    private bool _isMoving = true;
-    private bool _isFinishing = false;
-    private Rigidbody _rigidBody;
+    protected Transform _targetPoint;
+    private NavMeshAgent _navMeshAgent;
     public Action OnDeath;
     public Action OnFinish;
     public float rotationSpeed = 2f;
@@ -19,35 +26,67 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
     public float MaxHealth { get; set; }
     public float CurrentHealth { get; set; }
 
+    private void Awake()
+    {
+        _navMeshAgent = GetComponent<NavMeshAgent>();
+        _navMeshAgent.enabled = false;
+        _navMeshAgent.updateRotation = false;
+    }
+
     public void Initialize(Transform target)
     {
         _targetPoint = target;
         MaxHealth = enemyData.maxHealth;
         CurrentHealth = MaxHealth;
-        _isMoving = true;
-        _isFinishing = false;
-        _rigidBody = GetComponent<Rigidbody>();
+        _navMeshAgent.enabled = true;
+        _navMeshAgent.speed = enemyData.moveSpeed;
+        _navMeshAgent.SetDestination(_targetPoint.position);
+        _currentState = EnemyState.Moving;
+
     }
 
-    protected virtual void Update()
+    private void Update()
     {
-        if (!_isMoving || _targetPoint == null || _isFinishing) return;
-        MoveToTarget();
+        SetStates();
+        
     }
+
+    private void SetStates()
+    {
+        switch (_currentState)
+        {
+            case EnemyState.Idle:
+                break;
+
+            case EnemyState.Moving:
+                MoveToTarget();
+                OnMovingUpdate();
+                break;
+
+            case EnemyState.Attacking:
+                OnAttackingUpdate();
+                break;
+            
+        }
+    }
+    protected virtual void OnMovingUpdate() { }
+    protected virtual void OnAttackingUpdate() { }
 
     private void MoveToTarget()
     {
-        Vector3 dir = (_targetPoint.position - transform.position).normalized;
-        Vector3 movement = dir * enemyData.moveSpeed;
-
+        if (_navMeshAgent.isStopped) _navMeshAgent.isStopped = false;
         RotateToTarget(_targetPoint);
-        _rigidBody.velocity = movement;
-
-        if (Vector3.Distance(transform.position, _targetPoint.position) < 2f)
+        if (_navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance && !_navMeshAgent.pathPending)
         {
             OnFinish?.Invoke();
-            _isFinishing = true;
+            ChangeState(EnemyState.Idle);
         }
+    }
+    
+    
+    public void ChangeState(EnemyState newState)
+    {
+        _currentState = newState;
     }
 
     public void TakeDamage(float amount)
@@ -60,26 +99,20 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
     }
 
     public EnemyData GetEnemyData() => enemyData;
-
-    public void StopMovement()
+    public NavMeshAgent GetEnemyNavMesh => _navMeshAgent; 
+    
+    
+    protected void RotateToTarget(Transform target)
     {
-        _isMoving = false;
-        if (_rigidBody != null) _rigidBody.velocity = Vector3.zero;
-    }
+        if (target == null) return;
 
-    public void ResumeMovement() => _isMoving = true;
-
-    protected void RotateToTarget(Transform targetPosition)
-    {
-        if (targetPosition == null) return;
-
-        Vector3 direction = (targetPosition.position - transform.position).normalized;
+        Vector3 direction = (target.position - transform.position);
         direction.y = 0f;
 
-        if (direction == Vector3.zero) return;
+        if (direction.sqrMagnitude < 0.001f) return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(-direction);
-        Quaternion smoothRotation = Quaternion.Slerp(_rigidBody.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        _rigidBody.MoveRotation(smoothRotation);
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    
     }
 }

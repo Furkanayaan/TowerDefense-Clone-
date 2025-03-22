@@ -11,7 +11,6 @@ public class EnemyData : ScriptableObject
     [Header("Base Stats")]
     public float moveSpeed = 2f;
     public float maxHealth = 100f;
-    public float damageToBase = 5f;
     public int rewardAmount = 10;
     public int damageOnBase = 10;
 

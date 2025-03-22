@@ -110,7 +110,7 @@ Transform:
   m_GameObject: {fileID: 4596440377298834285}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.27, z: -0.539}
+  m_LocalPosition: {x: 0, y: 0.27, z: 0.59}
   m_LocalScale: {x: 0.287, y: 0.287, z: 0.287}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -176,9 +176,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1390510418134522432}
   - component: {fileID: 3902105608052433361}
-  - component: {fileID: 203188859743387947}
   - component: {fileID: 3678851309497340472}
-  - component: {fileID: 7043892924947082145}
+  - component: {fileID: 4716233323354529867}
   m_Layer: 0
   m_Name: AttackerEnemyParent
   m_TagString: Untagged
@@ -218,33 +217,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyData: {fileID: 11400000, guid: 64495beb657382d47a318f8ebb3f94bc, type: 2}
   rotationSpeed: 5
---- !u!54 &203188859743387947
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5006670215319465169}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
 --- !u!114 &3678851309497340472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,27 +231,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fillImage: {fileID: 8682175610516483083}
   bar: {fileID: 2618498073165960156}
---- !u!65 &7043892924947082145
-BoxCollider:
+--- !u!195 &4716233323354529867
+NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5006670215319465169}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Enabled: 0
+  m_AgentTypeID: 0
+  m_Radius: 0.63
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 1
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: 0.5
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1001 &3679681654489978126
 PrefabInstance:
   m_ObjectHideFlags: 0

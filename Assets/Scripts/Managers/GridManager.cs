@@ -83,20 +83,29 @@ public class GridManager : MonoBehaviour
     public void SetCellAvailable(Vector3 worldPosition)
     {
         Vector2Int cell = WorldToGrid(worldPosition);
-        Debug.Log("FullyCellPos" + cell);
         
         if (_gridCells.ContainsKey(cell) && _gridTower[cell] != null) {
             _gridCells[cell] = false;
             _gridTower[cell] = null;
-            Debug.Log($"Cell {cell} has been marked as empty again.");
+        }
+    }
+    
+    public void SetCellAvailable(Transform tower)
+    {
+        Vector2Int cell = WorldToGrid(tower.position);
+        if (_gridCells.ContainsKey(cell) && _gridTower[cell] != null) {
+            _gridCells[cell] = false;
+            _gridTower[cell] = null;
         }
     }
 
-    public Transform GetCellTransform(Vector3 worldPosition) {
+    public Transform GetTransformFromCell(Vector3 worldPosition) {
         Vector2Int cell = WorldToGrid(worldPosition);
         if (!_gridTower.ContainsKey(cell)) return null;
         return _gridTower[cell];
     }
+    
+    
 
     private Vector2Int WorldToGrid(Vector3 worldPosition)
     {

@@ -15,7 +15,7 @@ MonoBehaviour:
   objectType: 0
   cost: 50
   damage: 15
-  attackSpeed: 2
+  attackSpeed: 3
   health: 80
   attackRange: 10
   projectileSpeed: 5

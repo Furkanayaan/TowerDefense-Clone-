@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;
@@ -56,7 +57,7 @@ public class TowerPlacementManager : MonoBehaviour
             if (_ghostInstance != null && _selectedTowerData != null) {
                 int cost = _selectedTowerData.cost;
                 _gameManager.GoldPoolToGo(cost, _ghostInstance.transform.position);
-                _ghostInstance = null;
+                HideGhost();
             }
             return;
         }
@@ -66,15 +67,14 @@ public class TowerPlacementManager : MonoBehaviour
             
             //Destroy tower on cell
             if (!_canPlace && _selectedTowerData == null && _bDeleteTower) {
-                Transform tower = _gridManager.GetCellTransform(_gridPosition);
+                Transform tower = _gridManager.GetTransformFromCell(_gridPosition);
                 if(tower == null) return;
                 TowerData data = tower.GetComponent<BaseTower>().Data();
                 int cost = data.cost;
-                //_gameManager.AddCurrency(cost);
+                _isAvailable = false;
                 _gameManager.GoldPoolToGo(cost, tower.position);
                 RemoveTowerFromList(tower);
                 Destroy(tower.gameObject);
-                _gridManager.SetCellAvailable(_gridPosition);
                 RemoveDeleteTowerCube();
 
             }
@@ -115,7 +115,7 @@ public class TowerPlacementManager : MonoBehaviour
                 SetTransparency(0.2f);
             }
         }
-        else if (_ghostInstance != null) {
+        else {
             _isAvailable = false;
             Plane plane = new Plane(Vector3.up, Vector3.zero);
             if (plane.Raycast(ray, out float enter)) {
@@ -144,6 +144,7 @@ public class TowerPlacementManager : MonoBehaviour
     }
     private void HideGhost() {
         _canPlace = false;
+        _isAvailable = false;
         SetTransparency(0.2f);
         if (_ghostInstance != null) {
             if(_selectedTowerData != null) _ghostTowerPool.ReturnCurrentGhost(_selectedTowerData);
@@ -159,6 +160,7 @@ public class TowerPlacementManager : MonoBehaviour
         _gridManager.SetCellOccupied(position, newTower.transform);
         _allTowers.Add(newTower.transform);
         SetTransparency(1f);
+        _isAvailable = false;
         HideGhost();
         _selectedTowerData = null;
     }
@@ -187,5 +189,6 @@ public class TowerPlacementManager : MonoBehaviour
 
     public void RemoveTowerFromList(Transform tower) {
         _allTowers.Remove(tower);
+        _gridManager.SetCellAvailable(tower);
     }
 }

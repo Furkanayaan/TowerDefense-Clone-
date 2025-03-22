@@ -111,7 +111,9 @@ public class EnemySpawner : MonoBehaviour {
         };
     }
 
-    public void RemoveEnemy(BaseEnemy enemy, GameObject enemyGameObject, bool bDeath) {
+    public void RemoveEnemy(BaseEnemy enemy, GameObject enemyGameObject, bool bDeath)
+    {
+        enemy.GetEnemyNavMesh.enabled = false;
         _activeEnemies.Remove(enemy);
         ReturnToPool(enemyGameObject);
         if (bDeath) {
