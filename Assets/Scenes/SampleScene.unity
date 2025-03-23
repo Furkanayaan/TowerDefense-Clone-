@@ -4773,8 +4773,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delayBetweenWaves: 5
-  minEnemiesPerWave: 5
-  maxEnemiesPerWave: 8
+  minEnemiesPerWave: 3
+  maxEnemiesPerWave: 5
   spawnInterval: 0.1
 --- !u!4 &1429404038
 Transform:
@@ -6234,7 +6234,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   maksCellOnRow: 4
-  initCellCount: 3
+  initCellCount: 2
   cellCost: 50
 --- !u!1 &8518959939218743287
 GameObject:

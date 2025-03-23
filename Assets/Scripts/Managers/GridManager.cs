@@ -25,8 +25,16 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
+        if (initCellCount < 0) initCellCount = 0;
         // Start with one cell in the first row
+        while (initCellCount > maksCellOnRow)
+        {
+            _cellCount.Add(maksCellOnRow);
+            _rowCount++;
+            initCellCount -= maksCellOnRow;
+        }
         _cellCount.Add(initCellCount);
+        
         OnChangedCell?.Invoke();
         // Generate initial grid
         GenerateGrid();

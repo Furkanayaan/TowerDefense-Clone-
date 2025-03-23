@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectType: 1
   cost: 55
-  damage: 25
+  damage: 40
   attackSpeed: 1
   health: 100
   attackRange: 10
