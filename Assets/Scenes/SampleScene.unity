@@ -742,7 +742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9ac1c763ea896a42bf35e9867f85c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCurrency: 500
+  playerCurrency: 750
   maxHealth: 100
   toTheGoldUI: {fileID: 432240391}
 --- !u!4 &216727563

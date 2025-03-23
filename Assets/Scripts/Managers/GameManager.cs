@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
 
     public void LoseHealth(int amount)
     {
+        if(_currentHealth <= 0) return;
         // Reduce player health and trigger lose event if needed
         _currentHealth -= amount;
         if (_currentHealth <= 0)

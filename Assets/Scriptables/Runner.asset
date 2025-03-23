@@ -15,9 +15,9 @@ MonoBehaviour:
   type: 2
   moveSpeed: 2
   maxHealth: 40
-  rewardAmount: 10
+  rewardAmount: 25
   damageOnBase: 10
   attackRange: 0
   attackSpeed: 0
   damage: 0
-  projectileSpeed: 5
+  projectileSpeed: 0
