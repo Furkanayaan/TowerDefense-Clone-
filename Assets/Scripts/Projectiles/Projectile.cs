@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    private IDamageable _targetDamageable;
-    private Transform _targetTransform;
+    private IDamageable _targetDamageable; // Reference to the target's damageable interface
+    private Transform _targetTransform; // Transform of the target
     private float _speed;
-    private float _damage;
+    private float _damage; // Damage dealt on hit
 
-    private ProjectilePoolManager _pool;
+    private ProjectilePoolManager _pool; // Reference to the projectile pool manager
 
     public void Initialize(IDamageable targetDamageable, Transform targetTransform, float moveSpeed, float damageAmount, ProjectilePoolManager pool)
     {
@@ -22,19 +22,23 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
+        // If target is null or inactive, return to pool
         if (_targetTransform == null || !_targetTransform.gameObject.activeInHierarchy)
         {
-            _pool.PoolProjectile(gameObject);
+            _pool.ReturnToPool(gameObject);
             return;
         }
         
-        Vector3 dir = (_targetTransform.transform.position - transform.position).normalized;
-        transform.position += dir * _speed * Time.deltaTime;
+        // Move the projectile towards the target
+        transform.position = Vector3.MoveTowards(transform.position, _targetTransform.position, _speed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, _targetTransform.transform.position) < 0.2f)
+        // If close enough to target, deal damage and return to pool
+        if ((transform.position - _targetTransform.position).sqrMagnitude < 0.04f)
         {
+            // Apply damage to the target
             _targetDamageable.TakeDamage(_damage);
-            _pool.PoolProjectile(gameObject);
+            // Return projectile to the pool
+            _pool.ReturnToPool(gameObject);
         }
     }
 }

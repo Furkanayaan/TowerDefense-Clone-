@@ -6,15 +6,23 @@ using Zenject;
 
 public class EnemyRoadPoints : MonoBehaviour {
     [Inject] private GridManager _gridManager;
+    
+    // Start and end points for enemy movement
     public Transform initTransform;
     public Transform targetTransform;
     void Start() {
-        float cameraXPos = (_gridManager.maksCellOnRow - 1) * _gridManager.cellSize / 2f;
-        initTransform.position = new Vector3(cameraXPos, initTransform.position.y,
-            initTransform.position.z);
-        
-        targetTransform.position = new Vector3(cameraXPos, targetTransform.position.y,
-            targetTransform.position.z);
+        // Calculate half the grid width in world units
+        float halfGridWidth = (_gridManager.maksCellOnRow - 1) * _gridManager.cellSize * 0.5f;
+
+        // Align both transforms to the grid center on the X axis
+        SetXPosition(initTransform, halfGridWidth);
+        SetXPosition(targetTransform, halfGridWidth);
+    }
+    private void SetXPosition(Transform t, float x)
+    {
+        Vector3 pos = t.position;
+        pos.x = x;
+        t.position = pos;
     }
 
     public Transform GetInitTransform() {

@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 
-public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
+public class BaseEnemy : MonoBehaviour, IDamageable
 {
-    
+    // Enemy AI states
     public enum EnemyState
     {
         Idle,
@@ -17,13 +17,19 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
     private EnemyState _currentState = EnemyState.Idle;
     
     [SerializeField] private EnemyData enemyData;
-    protected Transform _targetPoint;
+    // Target destination (usually base)
+    private Transform _targetPoint;
     private NavMeshAgent _navMeshAgent;
+    // State machine delegate map
+    private Dictionary<EnemyState, Action> _stateBehaviors;
+    
+    // Event callbacks
     public Action OnDeath;
     public Action OnFinish;
     public float rotationSpeed = 2f;
 
-    public float MaxHealth { get; set; }
+    // Health properties
+    public float MaxHealth { get; set; } 
     public float CurrentHealth { get; set; }
 
     private void Awake()
@@ -31,8 +37,27 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _navMeshAgent.enabled = false;
         _navMeshAgent.updateRotation = false;
+        
+        // Define state behaviors for the FSM
+        _stateBehaviors = new Dictionary<EnemyState, Action>
+        {
+            { EnemyState.Idle, () => { } },
+            {
+                EnemyState.Moving, () =>
+                {
+                    MoveToTarget();
+                    OnMovingUpdate();
+                }
+            },
+            { EnemyState.Attacking, () =>
+            {
+                OnAttackingUpdate();
+            } 
+            }
+        };
     }
 
+    // Called externally when enemy is spawned
     public void Initialize(Transform target)
     {
         _targetPoint = target;
@@ -47,31 +72,15 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
 
     private void Update()
     {
-        SetStates();
-        
+        // Run the current state's behavior each frame
+        _stateBehaviors[_currentState]?.Invoke();
     }
-
-    private void SetStates()
-    {
-        switch (_currentState)
-        {
-            case EnemyState.Idle:
-                break;
-
-            case EnemyState.Moving:
-                MoveToTarget();
-                OnMovingUpdate();
-                break;
-
-            case EnemyState.Attacking:
-                OnAttackingUpdate();
-                break;
-            
-        }
-    }
+    
+    // To be overridden by child classes
     protected virtual void OnMovingUpdate() { }
     protected virtual void OnAttackingUpdate() { }
 
+    // Handles movement and path completion
     private void MoveToTarget()
     {
         if (_navMeshAgent.isStopped) _navMeshAgent.isStopped = false;
@@ -84,11 +93,13 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
     }
     
     
+    // Changes the current state
     public void ChangeState(EnemyState newState)
     {
         _currentState = newState;
     }
 
+    // Damageable interface implementation
     public void TakeDamage(float amount)
     {
         CurrentHealth -= amount;
@@ -102,6 +113,7 @@ public class BaseEnemy : MonoBehaviour, IDamageable, IHealth
     public NavMeshAgent GetEnemyNavMesh => _navMeshAgent; 
     
     
+    // Smooth rotation towards a target
     protected void RotateToTarget(Transform target)
     {
         if (target == null) return;

@@ -4,17 +4,21 @@ using UnityEngine;
 
 public class FastTower : BaseTower
 {
+    // Called when the tower is ready to attack
     protected override void Attack() {
-        Transform targetTransform = FindBestEnemyInRange();
-        if (targetTransform != null && targetTransform.gameObject.activeInHierarchy) {
-            IDamageable targetDamageable = targetTransform.GetComponent<IDamageable>();
-            if (targetDamageable != null) {
-                GameObject projectile = _projectilePoolManager.GetProjectile();
-                projectile.transform.position = transform.position;
+        // Find the best enemy to target (prefers low HP attackers)
+        BaseEnemy target = FindBestEnemyInRange();
+        if (target != null && target.gameObject.activeInHierarchy)
+        {
+            // Get a pooled projectile instance
+            GameObject projectile = _projectilePoolManager.GetPooledProjectile();
+            projectile.transform.position = transform.position;
 
-                Projectile proj = projectile.GetComponent<Projectile>();
-                proj.Initialize(targetDamageable, targetTransform, _projectileSpeed, _damage, _projectilePoolManager);
-            }
+            // Retrieve cached Projectile script (avoids GetComponent)
+            Projectile proj = _projectilePoolManager.ReturnProjectileScript(projectile);
+            if(proj == null) return;
+            // Initialize the projectile with target data and fire
+            proj.Initialize(target, target.transform, _projectileSpeed, _damage, _projectilePoolManager);
         }
     }
 
