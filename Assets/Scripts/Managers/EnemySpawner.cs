@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ObjectsType;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using Zenject;
 using Random = UnityEngine.Random;
