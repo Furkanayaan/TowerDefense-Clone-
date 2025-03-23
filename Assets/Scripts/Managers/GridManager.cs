@@ -15,6 +15,8 @@ public class GridManager : MonoBehaviour
     private List<int> _cellCount = new List<int>(); // List holding cell count per row
     [Range(1,5)]
     public int maksCellOnRow = 3; // Max cells allowed in a row
+
+    public int initCellCount = 1;
     private Dictionary<Vector2Int, bool> _gridCells = new(); // Dictionary to track if a cell is occupied
     private Dictionary<Vector2Int, Transform> _gridTower = new(); // Dictionary to hold tower references
     //Only checks the interactable state of the buttons.
@@ -24,7 +26,7 @@ public class GridManager : MonoBehaviour
     private void Start()
     {
         // Start with one cell in the first row
-        _cellCount.Add(1);
+        _cellCount.Add(initCellCount);
         OnChangedCell?.Invoke();
         // Generate initial grid
         GenerateGrid();
