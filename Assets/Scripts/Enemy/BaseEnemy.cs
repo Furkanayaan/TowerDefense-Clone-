@@ -94,7 +94,7 @@ public class BaseEnemy : MonoBehaviour, IDamageable
     
     
     // Changes the current state
-    public void ChangeState(EnemyState newState)
+    protected void ChangeState(EnemyState newState)
     {
         _currentState = newState;
     }

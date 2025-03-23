@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class AnimationManager : MonoBehaviour
 {
@@ -14,32 +15,32 @@ public class AnimationManager : MonoBehaviour
 
     public class AnimationProperties {
         //Target object to apply the animation.
-        public Transform TargetTransform; 
+        public Transform targetTransform; 
         //Animation type (Linear, Quadratic, etc.).
-        public Type AnimType;
+        public Type animType;
         //List of positions for the animation path.
-        public List<Vector3> Posses;
+        public List<Vector3> posses;
         //Action to be executed at the end of the animation.
-        public Action<Transform> Action;
+        public Action<Transform> action;
         //Animation curve index for the position animation.
-        public int AnimCurvePos;
+        public int animCurvePos;
         //Animation curve index for the sca;e animation.
-        public int AnimCurveScale;
+        public int animCurveScale;
         //Animation speed.
-        public float Speed = 1f;
+        public float speed = 1f;
         //Elapsed animation time.
-        public float Time = 0f;
+        public float animTimer = 0f;
 
         //Constructor that takes and assigns all values.
-        public AnimationProperties(Transform targetTransform, Type animType, List<Vector3> posses, Action<Transform> action, int animCurvePos, int animCurveScale, float speed = 1f, float time = 0f) {
-            TargetTransform = targetTransform;
-            AnimType = animType;
-            Posses = posses;
-            Action = action;
-            AnimCurvePos = animCurvePos;
-            AnimCurveScale = animCurveScale;
-            Speed = speed;
-            Time = time;
+        public AnimationProperties(Transform targetTransform, Type animType, List<Vector3> posses, Action<Transform> action, int animCurvePos, int animCurveScale, float speed = 1f, float animTimer = 0f) {
+            this.targetTransform = targetTransform;
+            this.animType = animType;
+            this.posses = posses;
+            this.action = action;
+            this.animCurvePos = animCurvePos;
+            this.animCurveScale = animCurveScale;
+            this.speed = speed;
+            this.animTimer = animTimer;
         }
     }
     
@@ -47,27 +48,27 @@ public class AnimationManager : MonoBehaviour
     public class SObjectsToAnim {
 
 
-        public Transform Transforms;
+        public Transform transforms;
 
-        public List<Vector3> Posses;
-        public Vector3 StartScales;
+        public List<Vector3> posses;
+        public Vector3 startScales;
 
-        public float Times;
-        public float Speeds;
+        public float timer;
+        public float speed;
 
-        public Type AnimTypes;
+        public Type animTypes;
         public int animationCurvePoses;
         public int animationCurveScales;
 
         public Action<Transform> Actions;
 
         public SObjectsToAnim() {
-            Transforms = null;
-            Posses = new();
-            StartScales = new();
-            Times = 0;
-            Speeds = 0;
-            AnimTypes = Type.Linear;
+            transforms = null;
+            posses = new();
+            startScales = new();
+            timer = 0;
+            speed = 0;
+            animTypes = Type.Linear;
 
             animationCurvePoses = 0;
             animationCurveScales = 0;
@@ -77,21 +78,21 @@ public class AnimationManager : MonoBehaviour
 
         //Adds a new animation property.
         public void Add(AnimationProperties animationProperties) {
-            if(animationProperties == null || animationProperties.TargetTransform == null) {
+            if(animationProperties == null || animationProperties.targetTransform == null) {
                 return;
             }
 
-            Transforms = animationProperties.TargetTransform;
-            Posses = animationProperties.Posses;
-            StartScales = animationProperties.TargetTransform.localScale;
-            Actions = animationProperties.Action;
-            Speeds = animationProperties.Speed;
+            transforms = animationProperties.targetTransform;
+            posses = animationProperties.posses;
+            startScales = animationProperties.targetTransform.localScale;
+            Actions = animationProperties.action;
+            speed = animationProperties.speed;
 
-            animationCurvePoses = animationProperties.AnimCurvePos;
-            animationCurveScales = animationProperties.AnimCurveScale;
-            AnimTypes = animationProperties.AnimType;
+            animationCurvePoses = animationProperties.animCurvePos;
+            animationCurveScales = animationProperties.animCurveScale;
+            animTypes = animationProperties.animType;
 
-            Times = animationProperties.Time;
+            timer = animationProperties.animTimer;
         }
         //Called when the animation is complete and performs necessary cleanup.
         public void Remove(Transform targetTransform) {
@@ -103,20 +104,20 @@ public class AnimationManager : MonoBehaviour
                 string error = e.ToString();
             }
                 
-            Transforms = null;
-            Posses = new List<Vector3>();
-            StartScales = new Vector3();
-            Times = 0;
-            Speeds = 0;
+            transforms = null;
+            posses = new List<Vector3>();
+            startScales = new Vector3();
+            timer = 0;
+            speed = 0;
             animationCurvePoses = 0;
             animationCurveScales = 0;
-            AnimTypes = Type.Linear;
+            animTypes = Type.Linear;
             Actions = null;
         }
     }
     
     //List of animations.
-    public List<SObjectsToAnim> ObjectsToAnim = new List<SObjectsToAnim>();
+    public List<SObjectsToAnim> objectsToAnim = new List<SObjectsToAnim>();
 
     //Position animation curves.
     [SerializeField] private AnimationCurve[] curvesPos;
@@ -132,41 +133,41 @@ public class AnimationManager : MonoBehaviour
     }
 
 
-    public void OneTimeAnimations() {
-        for (int i = 0; i < ObjectsToAnim.Count; i++) {
-            if(ObjectsToAnim[i] == null || ObjectsToAnim[i].Transforms == null ) {
-                ObjectsToAnim.RemoveAt(i);
+    private void OneTimeAnimations() {
+        for (int i = 0; i < objectsToAnim.Count; i++) {
+            if(objectsToAnim[i] == null || objectsToAnim[i].transforms == null ) {
+                objectsToAnim.RemoveAt(i);
                 return;
             }
-            if(!ObjectsToAnim[i].Transforms.gameObject.activeSelf) continue;
+            if(!objectsToAnim[i].transforms.gameObject.activeSelf) continue;
             //Evaluate animation curves.
-            float evaluated = curvesPos[ObjectsToAnim[i].animationCurvePoses].Evaluate(ObjectsToAnim[i].Times);
-            float evaluatedScale = curvesScale[ObjectsToAnim[i].animationCurveScales].Evaluate(ObjectsToAnim[i].Times);
+            float evaluated = curvesPos[objectsToAnim[i].animationCurvePoses].Evaluate(objectsToAnim[i].timer);
+            float evaluatedScale = curvesScale[objectsToAnim[i].animationCurveScales].Evaluate(objectsToAnim[i].timer);
 
             //Apply position and scale.
-            ObjectsToAnim[i].Transforms.position = PosReturner(i, evaluated);
-            ObjectsToAnim[i].Transforms.localScale = ObjectsToAnim[i].StartScales + Vector3.one * evaluatedScale;
+            objectsToAnim[i].transforms.position = PosReturner(i, evaluated);
+            objectsToAnim[i].transforms.localScale = objectsToAnim[i].startScales + Vector3.one * evaluatedScale;
 
             //Update animation duration.
-            ObjectsToAnim[i].Times += Time.smoothDeltaTime / ObjectsToAnim[i].Speeds;
-            if (ObjectsToAnim[i].Times > 1f) {
+            objectsToAnim[i].timer += Time.smoothDeltaTime / objectsToAnim[i].speed;
+            if (objectsToAnim[i].timer > 1f) {
                 //Set the position and scale to the final values when the animation ends.
-                ObjectsToAnim[i].Transforms.position =
-                    PosReturner(i, curvesPos[ObjectsToAnim[i].animationCurvePoses].keys[^1].value);
+                objectsToAnim[i].transforms.position =
+                    PosReturner(i, curvesPos[objectsToAnim[i].animationCurvePoses].keys[^1].value);
 
-                ObjectsToAnim[i].Transforms.localScale = 
-                    ObjectsToAnim[i].StartScales + Vector3.one * curvesScale[ObjectsToAnim[i].animationCurveScales].keys[^1].value;
+                objectsToAnim[i].transforms.localScale = 
+                    objectsToAnim[i].startScales + Vector3.one * curvesScale[objectsToAnim[i].animationCurveScales].keys[^1].value;
                 //Clear the animation
-                ObjectsToAnim[i].Remove(ObjectsToAnim[i].Transforms);
-                ObjectsToAnim.RemoveAt(i);
+                objectsToAnim[i].Remove(objectsToAnim[i].transforms);
+                objectsToAnim.RemoveAt(i);
             }
         }
     }
 
     
     //Function to calculate position.
-    public Vector3 PosReturner(int index, float time) {
-        switch (ObjectsToAnim[index].AnimTypes) {
+    private Vector3 PosReturner(int index, float time) {
+        switch (objectsToAnim[index].animTypes) {
             default:
                 return new Vector3();
             case Type.Linear:
@@ -181,22 +182,22 @@ public class AnimationManager : MonoBehaviour
     }
 
     //Calculate position using linear interpolation.
-    public Vector3 Linear(int index, float t) {
-        return ObjectsToAnim[index].Posses[0] + t * (ObjectsToAnim[index].Posses[1] - ObjectsToAnim[index].Posses[0]);
+    private Vector3 Linear(int index, float t) {
+        return objectsToAnim[index].posses[0] + t * (objectsToAnim[index].posses[1] - objectsToAnim[index].posses[0]);
     }
     
     //Calculate position using three-point quadratic interpolation
-    public Vector3 QuadraticThree(int index, float t) {
-        Vector3 p = (1f - t) * ((1 - t) * ObjectsToAnim[index].Posses[0] + t * ObjectsToAnim[index].Posses[1]) + t * ((1 - t) * ObjectsToAnim[index].Posses[1] + t * ObjectsToAnim[index].Posses[2]);
+    private Vector3 QuadraticThree(int index, float t) {
+        Vector3 p = (1f - t) * ((1 - t) * objectsToAnim[index].posses[0] + t * objectsToAnim[index].posses[1]) + t * ((1 - t) * objectsToAnim[index].posses[1] + t * objectsToAnim[index].posses[2]);
         return p;
     }
     
     //Calculate position using four-point quadratic interpolation.
-    public Vector3 QuadraticFour(int index, float t) {
-        Vector3 p = Mathf.Pow(1f - t, 3f) * ObjectsToAnim[index].Posses[0] + 
-                    3f * Mathf.Pow(1f - t, 2f) * t * ObjectsToAnim[index].Posses[1] + 
-                    3f * (1f - t) * t * t * ObjectsToAnim[index].Posses[2] + 
-                    Mathf.Pow(t, 3f) * ObjectsToAnim[index].Posses[3];
+    private Vector3 QuadraticFour(int index, float t) {
+        Vector3 p = Mathf.Pow(1f - t, 3f) * objectsToAnim[index].posses[0] + 
+                    3f * Mathf.Pow(1f - t, 2f) * t * objectsToAnim[index].posses[1] + 
+                    3f * (1f - t) * t * t * objectsToAnim[index].posses[2] + 
+                    Mathf.Pow(t, 3f) * objectsToAnim[index].posses[3];
         
         return p;
     }

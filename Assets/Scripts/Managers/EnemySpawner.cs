@@ -22,11 +22,11 @@ public class EnemySpawner : MonoBehaviour
     }
 
     [Header("Enemy Configuration")]
-    [SerializeField] private List<EnemyConfig> enemyConfigs; // List of enemy configurations
+    [SerializeField] List<EnemyConfig> enemyConfigs; // List of enemy configurations
     [SerializeField] private int preWarmCount = 10; // Number of enemies to pre-instantiate per type
 
-    [ShowInInspector] private Dictionary<ObjectTypes, EnemyConfig> _enemyConfigMap = new(); // Config lookup by type
-    [ShowInInspector]private Dictionary<ObjectTypes, Queue<(GameObject, BaseEnemy)>> _pools = new(); // Object pool per enemy type
+    private Dictionary<ObjectTypes, EnemyConfig> _enemyConfigMap = new(); // Config lookup by type
+    private Dictionary<ObjectTypes, Queue<(GameObject, BaseEnemy)>> _pools = new(); // Object pool per enemy type
     private List<BaseEnemy> _activeEnemies = new(); // Currently active enemies on scene
 
     private void Start()
@@ -112,7 +112,7 @@ public class EnemySpawner : MonoBehaviour
         _pools[type].Enqueue((enemyGameObject, enemy));
     }
 
-    public void RemoveEnemy(BaseEnemy enemy, bool bDeath)
+    private void RemoveEnemy(BaseEnemy enemy, bool bDeath)
     {
         // Disable movement
         enemy.GetEnemyNavMesh.enabled = false;

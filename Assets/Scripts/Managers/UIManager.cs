@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour
     public TowerData[] availableTowers;
     public Image healthFill;
     public GameObject failUI;
-    public int cellCost;
+    
     public TextMeshProUGUI[] availableTowersCost;
     public TextMeshProUGUI currencyText;
     public TextMeshProUGUI totalTowerCount;
@@ -41,7 +41,7 @@ public class UIManager : MonoBehaviour
     {
         _hasShownGameOverUI = false;
         UpdateTowerCostTexts();
-        addCellCost.text = "Cost : " + cellCost;
+        addCellCost.text = "Cost : " + _gridManager.cellCost;
 
         _gameManager.OnCurrencyChanged += amount =>
         {
@@ -167,10 +167,10 @@ public class UIManager : MonoBehaviour
     // Enables/disables all UI buttons based on game state
     private void ChangeButtonsInteractable()
     {
-        bool commonControl = !_waveManager.IsWaveInProgress && !_hasShownGameOverUI && _towerPlacementManager.GetSelectedData() == null && !_towerPlacementManager.isDeleting;
+        bool commonControl = !_waveManager.IsWaveInProgress && !_hasShownGameOverUI && _towerPlacementManager.GetSelectedData() == null && !_towerPlacementManager.ReturnDeleting();
         bool specifyForTowersButtons =  !_towerPlacementManager.AreAllCellsFully();
         bool specifyForDeleteButton = _towerPlacementManager.IsAnyTowerOnCell();
-        bool specifyForCellButton = _gameManager.playerCurrency >= cellCost;
+        bool specifyForCellButton = _gameManager.playerCurrency >= _gridManager.cellCost;
 
         addCellButton.interactable = commonControl && specifyForCellButton;
         deleteButton.interactable = commonControl && specifyForDeleteButton;
@@ -183,24 +183,6 @@ public class UIManager : MonoBehaviour
     }
 
     
-
-    // Called when the player clicks the Add Cell button
-    public void AddCell()
-    {
-        if (!addCellButton.interactable) return;
-
-        if (_gameManager.TrySpendCurrency(cellCost))
-        {
-            _gridManager.cellCount[_gridManager.rowCount]++;
-            if (_gridManager.cellCount[_gridManager.rowCount] >= _gridManager.maksCellOnRow)
-            {
-                _gridManager.rowCount++;
-                _gridManager.cellCount.Add(0);
-            }
-
-            _gridManager.GenerateGrid();
-        }
-    }
 
     // Reloads the current scene
     public void OnRestartButtonClicked()

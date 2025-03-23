@@ -7,32 +7,36 @@ using Zenject;
 
 public class GridManager : MonoBehaviour
 {
+    [Inject] private GameManager _gameManager;
+    [Range(1,5)]
     public float cellSize = 2f; // Size of each grid cell
     public GameObject gridVisualPrefab; // Prefab to visually represent a grid cell
     public LayerMask placementLayer; // Layer used for placement raycasts
-    public int rowCount = 0; // Current number of rows
-    public List<int> cellCount = new List<int>(); // List holding cell count per row
+    private int _rowCount = 0; // Current number of rows
+    private List<int> _cellCount = new List<int>(); // List holding cell count per row
+    [Range(1,5)]
     public int maksCellOnRow = 3; // Max cells allowed in a row
-    [ShowInInspector] private Dictionary<Vector2Int, bool> _gridCells = new(); // Dictionary to track if a cell is occupied
-    [ShowInInspector] private Dictionary<Vector2Int, Transform> _gridTower = new(); // Dictionary to hold tower references
+    private Dictionary<Vector2Int, bool> _gridCells = new(); // Dictionary to track if a cell is occupied
+    private Dictionary<Vector2Int, Transform> _gridTower = new(); // Dictionary to hold tower references
     //Only checks the interactable state of the buttons.
     public Action OnChangedCell;
+    public int cellCost;
 
     private void Start()
     {
         // Start with one cell in the first row
-        cellCount.Add(1);
+        _cellCount.Add(1);
         OnChangedCell?.Invoke();
         // Generate initial grid
         GenerateGrid();
     }
 
-    public void GenerateGrid()
+    private void GenerateGrid()
     {
         // Loop through all defined rows and generate corresponding cells
-        for (int y = 0; y <= rowCount; y++)
+        for (int y = 0; y <= _rowCount; y++)
         {
-            for (int x = 0; x < cellCount[y]; x++)
+            for (int x = 0; x < _cellCount[y]; x++)
             {
                 Vector2Int cell = new(x, y);
                 if (!_gridCells.ContainsKey(cell) && !_gridTower.ContainsKey(cell))
@@ -121,13 +125,29 @@ public class GridManager : MonoBehaviour
     // Return all cell on scene
     public int ReturnAllCellCount()
     {
-        if (cellCount.Count < 1) return 0;
+        if (_cellCount.Count < 1) return 0;
         int count = 0;
-        for (int i = 0; i < cellCount.Count; i++)
+        for (int i = 0; i < _cellCount.Count; i++)
         {
-            count += cellCount[i];
+            count += _cellCount[i];
         }
 
         return count;
+    }
+    
+    // Called when the player clicks the Add Cell button
+    public void AddCell()
+    {
+        if (_gameManager.TrySpendCurrency(cellCost))
+        {
+            _cellCount[_rowCount]++;
+            if (_cellCount[_rowCount] >= maksCellOnRow)
+            {
+                _rowCount++;
+                _cellCount.Add(0);
+            }
+
+            GenerateGrid();
+        }
     }
 }

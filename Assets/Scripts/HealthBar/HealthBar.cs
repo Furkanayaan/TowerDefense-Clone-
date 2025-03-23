@@ -20,7 +20,7 @@ public class HealthBar : MonoBehaviour
     }
 
     // Updates the health bar fill based on current health values. Uses Lerp for smooth visual transitions.
-    public void SetHealth() {
+    private void SetHealth() {
         float maxHp = _healthProp.MaxHealth;
         float currentHp = _healthProp.CurrentHealth;
         fillImage.fillAmount = Mathf.Lerp(fillImage.fillAmount, currentHp / maxHp, 10f*Time.deltaTime);

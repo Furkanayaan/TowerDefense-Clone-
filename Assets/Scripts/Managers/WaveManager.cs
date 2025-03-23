@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 public class WaveManager : MonoBehaviour
 {
-    [Header("Wave Properties")] [Inject] private EnemySpawner _enemySpawner;
+    [Inject] private EnemySpawner _enemySpawner;
 
     [Inject] private GameManager _gameManager;
     // Time between waves
@@ -21,7 +21,7 @@ public class WaveManager : MonoBehaviour
     // Current wave number
     private int _waveNumber = 0;
     // Flag to check if wave is active
-    [ShowInInspector] public bool IsWaveInProgress { get; private set; } = false;
+    public bool IsWaveInProgress { get; private set; } = false;
 
     // Enum representing the current state of the wave
     private enum WaveState

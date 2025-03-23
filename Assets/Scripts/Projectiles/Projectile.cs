@@ -22,6 +22,11 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
+        ProjectileMovement();
+    }
+
+    private void ProjectileMovement()
+    {
         // If target is null or inactive, return to pool
         if (_targetTransform == null || !_targetTransform.gameObject.activeInHierarchy)
         {

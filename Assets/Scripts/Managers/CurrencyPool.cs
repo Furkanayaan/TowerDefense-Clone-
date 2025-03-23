@@ -122,7 +122,7 @@ public class CurrencyPool : MonoBehaviour
             AnimationManager.AnimationProperties props = new(target, animationType, poses, end, 0, 0, UnityEngine.Random.Range(0.6f, 0.8f));
             sObjectsToAnim.Add(props);
             //Add the animation.
-            AnimationManager.I.ObjectsToAnim.Add(sObjectsToAnim);
+            AnimationManager.I.objectsToAnim.Add(sObjectsToAnim);
         }
 
     }

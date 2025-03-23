@@ -19,7 +19,7 @@ public class TowerPlacementManager : MonoBehaviour {
     private enum InteractionState { None, Placing, Deleting }
 
     // Current interaction state
-    [ShowInInspector]private InteractionState _currentState = InteractionState.None;
+    private InteractionState _currentState = InteractionState.None;
 
     public float activationDistance = 2f; // Distance to activate cell interaction
     public Transform deleteCube; // Reference to delete cube
@@ -30,7 +30,7 @@ public class TowerPlacementManager : MonoBehaviour {
     private bool _hasAnimated = false; // Animation flag
     private List<Transform> _allTowers = new(); // List of all placed towers
     private Camera _camera;
-    public bool isDeleting; // Is in delete mode
+    private bool _isDeleting; // Is in delete mode
 
     public Action<int> OnTowerCountChanged;
     //Only checks the interactable state of the buttons.
@@ -99,7 +99,7 @@ public class TowerPlacementManager : MonoBehaviour {
         Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _gridManager.placementLayer)) {
             _gridPosition = _gridManager.GetCellPosition(hit.point);
-            _ghostInstance.transform.position = !isDeleting ? _gridPosition + Vector3.up : _gridPosition;
+            _ghostInstance.transform.position = !_isDeleting ? _gridPosition + Vector3.up : _gridPosition;
             
             float distance = Vector3.Distance(hit.point, _gridPosition);
 
@@ -109,7 +109,7 @@ public class TowerPlacementManager : MonoBehaviour {
                 if(!isCellValid) return;
                 bool isCellEmpty = _gridManager.IsCellEmpty(_gridPosition);
                 // If is cell empty and state is not delete mode
-                if (isCellEmpty && !isDeleting) {
+                if (isCellEmpty && !_isDeleting) {
                     _currentState = InteractionState.Placing;
                     SetGhostTransparency(0.7f);
                     if (!_hasAnimated) {
@@ -170,8 +170,7 @@ public class TowerPlacementManager : MonoBehaviour {
 
     // Enable delete mode and assign delete cube
     public void DeleteTower() {
-        //if (_waveManager.IsWaveInProgress || !IsAnyTowerOnCell() || _gameManager.IsLose() || _selectedTowerData != null) return;
-        isDeleting = true;
+        _isDeleting = true;
         OnIsDeletingChanged?.Invoke();
         deleteCube.gameObject.SetActive(true);
         _ghostInstance = deleteCube.gameObject;
@@ -192,7 +191,7 @@ public class TowerPlacementManager : MonoBehaviour {
     private void RemoveDeleteTowerCube() {
         _currentState = InteractionState.None;
         deleteCube.gameObject.SetActive(false);
-        isDeleting = false;
+        _isDeleting = false;
         _ghostInstance = null;
         OnIsDeletingChanged?.Invoke();
     }
@@ -204,7 +203,7 @@ public class TowerPlacementManager : MonoBehaviour {
             _ghostTowerPool.ReturnCurrentGhost();
         }
 
-        if (isDeleting)
+        if (_isDeleting)
         {
             RemoveDeleteTowerCube();
         }
@@ -232,5 +231,10 @@ public class TowerPlacementManager : MonoBehaviour {
     public bool AreAllCellsFully()
     {
         return _gridManager.ReturnAllCellCount() == _allTowers.Count;
+    }
+
+    public bool ReturnDeleting()
+    {
+        return _isDeleting;
     }
 }
